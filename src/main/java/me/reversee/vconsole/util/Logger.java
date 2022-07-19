@@ -13,9 +13,9 @@ public class Logger {
             File logfile = new File(file_prefix + "-log.log");
             logfile_path = logfile.getAbsolutePath();
             if (logfile.createNewFile()) {
-                Logger.log("log started!", logfile_path, false);
+                Logger.log("Log started!", logfile_path, false);
             } else {
-                Logger.log("bad date or filename!");
+                Logger.log("Bad date or filename!");
             }
         } catch (IOException e) {
             Logger.log("An error occurred!");
@@ -29,9 +29,11 @@ public class Logger {
     public static void log(String s, String logfile_path, boolean broadcast) { // to logfile with broadcast option
 
         // get invoker class
+
         StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
         String callerMethod = ste.getMethodName();
         String callerClass;
+
         try {
             callerClass = Class.forName(ste.getClassName()).getSimpleName();
         } catch (ClassNotFoundException e) {
@@ -54,9 +56,11 @@ public class Logger {
     public static void log(String s, String logfile_path) { // to logfile
 
         // get invoker class
+
         StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
         String callerMethod = ste.getMethodName();
         String callerClass;
+
         try {
             callerClass = Class.forName(ste.getClassName()).getSimpleName();
         } catch (ClassNotFoundException e) {
@@ -75,9 +79,12 @@ public class Logger {
     }
 
     public static void log(String s, StackTraceElement ste) { // to console with forced stack trace
+
         // get invoker class
+
         String callerMethod = ste.getMethodName();
         String callerClass;
+
         try {
             callerClass = Class.forName(ste.getClassName()).getSimpleName();
         } catch (ClassNotFoundException e) {
@@ -88,10 +95,13 @@ public class Logger {
         System.out.println("[" + log_prefix + "] " + "[" + callerClass + "/" + callerMethod + "]: "+ s);
     }
     public static void log(String s) { // to console
+
         // get invoker class
+
         StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
         String callerMethod = ste.getMethodName();
         String callerClass;
+
         try {
             callerClass = Class.forName(ste.getClassName()).getSimpleName();
         } catch (ClassNotFoundException e) {
