@@ -28,5 +28,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Virtual Console JAR File
-        path: /*.jar
+        path: target/*.jar
 
