@@ -1,7 +1,11 @@
 package me.reversee.vconsole.rom;
 
+import me.reversee.vconsole.DoNothing;
 import me.reversee.vconsole.box.Instructions;
+import me.reversee.vconsole.box.Registers;
 import me.reversee.vconsole.box._tokenValues;
+import me.reversee.vconsole.util.Logger;
+import me.reversee.vconsole.util.StringTool;
 
 import java.util.*;
 
@@ -15,32 +19,81 @@ public class Tokenizer {
      */
 
     // breaks string into pieces
-    public ArrayList<String> getTokenizedString(String str) {
-        return (ArrayList<String>) Collections.list(new StringTokenizer(str, " ")).stream()
-                .map(token -> (String) token).toList();
+    public static ArrayList<String> getTokenizedArray(String str) {
+
+        StringTokenizer st = new StringTokenizer(str);
+        ArrayList<String> TokenizedArray = new ArrayList<String>();
+
+        String TokenBuffer = null;
+        int skip = 0;
+
+        while (st.hasMoreTokens()) {
+            String nextToken = st.nextToken();
+            if (skip != 0) {
+                skip -= 1;
+                continue;
+            }
+            TokenBuffer = nextToken;
+
+            if (TokenBuffer.startsWith("\"")) {
+                // get quoted string
+                TokenBuffer = StringTool.getQuote(str);
+
+                // check how many tokens were skipped
+                skip = getTokenCount(TokenBuffer);
+            }
+
+            if (TokenBuffer.endsWith(",")) { TokenBuffer = StringTool.removeLastChar(TokenBuffer); }
+
+            TokenizedArray.add(TokenBuffer);
+
+        }
+
+        return TokenizedArray;
+
     }
 
-    public HashMap<_tokenValues, Object> getCompiledTokenizedString(ArrayList<String> tokenized_string) {
+    public static Integer getTokenCount(String str) {
+        StringTokenizer st = new StringTokenizer(str);
+        return st.countTokens();
+    }
 
-        HashMap<_tokenValues, Object> compiledTokenizedString = new HashMap<>();
+    public static LinkedHashMap<_tokenValues, Object> getCompiledMap(ArrayList<String> tokenized_string) {
+
+        LinkedHashMap<_tokenValues, Object> compiledTokenizedString = new LinkedHashMap<>();
 
         ListIterator<String> tokens = tokenized_string.listIterator();
         Instructions ci;
+        Registers ri;
         ArrayList<_tokenValues> compileSet = new ArrayList<>();
         Object output;
-        Integer i;
+        int i;
 
         while (tokens.hasNext()) {
             output = tokens.next();
             i = tokens.nextIndex();
 
-            if (i == 0) {
+            if (i == 1) {
+                Logger.log("Check instruction " + output, Logger.logfile, true);
                 compiledTokenizedString.put(_tokenValues.Instruction, output);
-                ci = Instructions.valueOf(String.valueOf(output));
+                ci = Instructions.valueOf((output.toString().toUpperCase()));
                 compileSet = getInstructionCompileSet(ci);
-            } else if (i > 0) {
-                if (isTokenValueValid(output, compileSet.get(i))) {
-                    compiledTokenizedString.put(compileSet.get(i), output);
+            } else if (i > 1) {
+                Logger.log("Check parameters for : " + output.toString() + ", should be : " + (i - 2), Logger.logfile, true );
+                try {
+                    Registers.valueOf((output.toString().toUpperCase()));
+                    Logger.log("Valid!", Logger.logfile, true);
+                    compiledTokenizedString.put(compileSet.get(i - 2), output);
+                    continue;
+                } catch (Exception e) {
+                    DoNothing.invoke();
+                }
+
+                if (isTokenValueValid(output, compileSet.get(i - 2))) {
+                    Logger.log("Valid!", Logger.logfile, true);
+                    compiledTokenizedString.put(compileSet.get(i - 2), output);
+                } else {
+                    System.out.println("Compiler error! Instruction needs " + compileSet.get(i));
                 }
             }
 
@@ -49,7 +102,7 @@ public class Tokenizer {
         return compiledTokenizedString;
     }
 
-    public ArrayList<_tokenValues> getInstructionCompileSet(Instructions instruction) {
+    public static ArrayList<_tokenValues> getInstructionCompileSet(Instructions instruction) {
         ArrayList<_tokenValues> compiledTokenizedString = new ArrayList<>();
 
         switch (instruction) {
@@ -67,13 +120,18 @@ public class Tokenizer {
         return compiledTokenizedString;
     }
 
-    public boolean isTokenValueValid(Object value, _tokenValues target) {
-        if      (value instanceof String    && target == _tokenValues.ValueString)  { return true; }
+    public static boolean isTokenValueValid(Object value, _tokenValues target) {
+        if (target == _tokenValues.ValueAny) { return true; }
+        else if (value instanceof String    && target == _tokenValues.ValueString)  { return true; }
         else if (value instanceof Integer   && target == _tokenValues.ValueInteger) { return true; }
         else if (value instanceof Boolean   && target == _tokenValues.ValueBoolean) { return true; }
         else if (value instanceof List      && target == _tokenValues.ValueList)    { return true; }
-        
-        return false;
+        else if (Character.isDigit(String.valueOf(value).charAt(0)) && String.valueOf(value).charAt(1) == 'x' && String.valueOf(value).length() == 4 && target == _tokenValues.HexadecimalAddress) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 }
