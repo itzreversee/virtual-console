@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class RomManager {
     public static void CreateBlankRomFile(String rom_file_name) { RomManager.WriteBlankRomFile(rom_file_name);           }
-    public static void CreateBlankRomFile()                     { RomManager.WriteBlankRomFile("blank.rom"); }
+    public static void CreateBlankRomFile()                     { RomManager.WriteBlankRomFile("blank.rsc"); }
 
     public static void WriteBlankRomFile(String rom_file_name)  {
         try {
@@ -26,7 +26,7 @@ public class RomManager {
 
                 outStream.flush();
                 outStream.close();
-                Logger.log("Blank rom: " + rom_file.getPath());
+                Logger.log("Blank rom source: " + rom_file.getPath());
             }
         } catch (IOException e) {
             Logger.log("An error occurred!");
