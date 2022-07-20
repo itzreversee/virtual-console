@@ -16,21 +16,22 @@ public enum Registers {
     PBE,
     PBF,
 
-    // Integer Buffer A A-F
-    IAA,
-    IAB,
-    IAC,
-    IAD,
-    IAE,
-    IAF,
+    // Register V 0-6
+    V0,
+    V1,
+    V2,
+    V3,
+    V4,
+    V5,
+    V6,
 
-    // Integer Buffer B A-F
-    IBA,
-    IBB,
-    IBC,
-    IBD,
-    IBE,
-    IBF,
+    // Register V A-F
+    VA,
+    VB,
+    VC,
+    VD,
+    VE,
+    VF
 
 
 }
