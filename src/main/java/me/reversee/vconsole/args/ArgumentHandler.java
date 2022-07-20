@@ -1,8 +1,8 @@
 package me.reversee.vconsole.args;
 
 import me.reversee.vconsole.DoNothing;
-import me.reversee.vconsole.Main;
 import me.reversee.vconsole.exceptions.NotImplementedException;
+import me.reversee.vconsole.rom.RomCompiler;
 import me.reversee.vconsole.rom.RomExecutor;
 import me.reversee.vconsole.rom.RomFile;
 import me.reversee.vconsole.rom.RomManager;
@@ -27,6 +27,9 @@ public class ArgumentHandler {
                     Logger.log("Creating blank.rom file!", Logger.logfile, true);
                     RomManager.CreateBlankRomFile();
                 }
+                case "compile_rom_source" -> {
+                    Logger.log("Compiling rom from source", Logger.logfile, true);
+                    RomCompiler.compileFromFile(String.valueOf(value));              }
                 case "rom_file" -> {
                     Logger.log("Loading rom file", Logger.logfile, true);
                     RomFile rom = RomManager.fromFilePath(value.toString());

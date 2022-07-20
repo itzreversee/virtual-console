@@ -23,8 +23,12 @@ public class ArgumentParser {
                 String option_type = sb.toString();
 
                 switch (option_type) { // check what option is it
-                    case "clear-cache" -> finalMap.put("clear-cache", true);
-                    case "clear-logs" ->  finalMap.put("clear-logs", true);
+                    case "clear-cache" -> finalMap.put("clear_cache", true);
+                    case "clear-logs" ->  finalMap.put("clear_logs", true);
+                    case "compile-rom-source" -> {
+                        optionBefore = "compile_rom_source";
+                        insertNextOption = true;
+                    }
                     case "rom" -> {
                         optionBefore = "rom_file";
                         insertNextOption = true;
@@ -45,7 +49,12 @@ public class ArgumentParser {
             containsRequiredKeys = true;
         } else if (arg_map.containsKey("make_blank_rom_file")) {
             containsRequiredKeys = true;
+        } else if (arg_map.containsKey("compile_rom_source")) {
+            containsRequiredKeys = true;
+        } else if (arg_map.containsKey("clear_logs") || arg_map.containsKey("clear_cache")) {
+            containsRequiredKeys = true;
         }
+
 
         return containsRequiredKeys;
     }
