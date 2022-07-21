@@ -15,6 +15,11 @@ Here is the list of available parameters:
  * ```--clear-cache``` clears cache **(not implemented yet)**
  * ```--clear-logs``` clears logs **(not implemented yet)**
 
-### Compiling Virtual Console
+### Compiling 
+Download source code ( with modules if I add them ), you can use:   
+```git clone https://github.com/reversee-dev/virtual-console --recurse-submodules```
+
+After cloning, cd into root dir of source code, and run ```mvn clean package```  
+When it finishes, you can run it from ```target/``` folder.  
 
 ### Writing code
