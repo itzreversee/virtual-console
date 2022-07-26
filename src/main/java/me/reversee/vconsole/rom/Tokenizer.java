@@ -9,8 +9,6 @@ import me.reversee.vconsole.util.StringTool;
 
 import java.util.*;
 
-import static me.reversee.vconsole.rom.RomFile.instructions;
-
 public class Tokenizer {
 
     /* eg. Turns " mov PBA, "Hello, World" "
@@ -74,12 +72,13 @@ public class Tokenizer {
             i = tokens.nextIndex();
 
             if (i == 1) {
+                Logger.newline(true);
                 Logger.log("Check instruction " + output, Logger.logfile, true);
                 compiledTokenizedString.put(_tokenValues.Instruction, output);
                 ci = Instructions.valueOf((output.toString().toUpperCase()));
                 compileSet = getInstructionCompileSet(ci);
             } else if (i > 1) {
-                Logger.log("Check parameters for : " + output.toString() + ", should be : " + (i - 2), Logger.logfile, true );
+                Logger.log("Check parameters for : " + output.toString() + ", should be : " + _tokenValues.valueOf(String.valueOf(compileSet.get(i - 2))), Logger.logfile, true );
                 try {
                     Registers.valueOf((output.toString().toUpperCase()));
                     Logger.log("Valid!", Logger.logfile, true);
