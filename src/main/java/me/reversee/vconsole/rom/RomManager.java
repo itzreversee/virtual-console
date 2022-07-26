@@ -34,7 +34,14 @@ public class RomManager {
         }
     }
 
-    public static RomFile fromFilePath(String rom_file_path) throws NotImplementedException {
-        throw new NotImplementedException();
+    public static RomFile fromFilePath(String cmap_file_path) throws NotImplementedException {
+        RomFile rf = new RomFile();
+        File f = new File(cmap_file_path);
+
+        rf.file_path = f.getPath();
+        rf.file_path_absolute = f.getAbsolutePath();
+        rf.isCMap = f.getPath().endsWith(".rom_cmap");
+
+        return rf;
     }
 }
