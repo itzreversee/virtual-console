@@ -32,8 +32,12 @@ public class ArgumentHandler {
                     RomCompiler.compileFromFile(String.valueOf(value));              }
                 case "rom_file" -> {
                     Logger.log("Loading rom file", Logger.logfile, true);
-                    RomFile rom = RomManager.fromFilePath(value.toString());
-                    RomExecutor.executeRomFile(rom);
+                    RomFile rf = RomManager.fromFilePath(value.toString());
+                    if (rf.isCMap) {
+                        RomExecutor.executeRomCMapFile(rf);
+                    } else {
+                        RomExecutor.executeRomFile(rf);
+                    }
                 }
             }
         }
