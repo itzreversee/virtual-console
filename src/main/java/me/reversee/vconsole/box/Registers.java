@@ -16,22 +16,4 @@ public enum Registers {
     PBE,
     PBF,
 
-    // Register V 0-6
-    V0,
-    V1,
-    V2,
-    V3,
-    V4,
-    V5,
-    V6,
-
-    // Register V A-F
-    VA,
-    VB,
-    VC,
-    VD,
-    VE,
-    VF
-
-
 }
