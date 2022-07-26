@@ -4,6 +4,7 @@ import java.io.*;
 
 public class Logger {
     public static String logfile = "";
+    public static boolean lldo = false; // low level debug output
     public static String init() {
 
         String file_prefix = DateControl.getCurrentDate("full");
@@ -110,6 +111,37 @@ public class Logger {
 
         String log_prefix = DateControl.getCurrentDate("hour");
         System.out.println("[" + log_prefix + "] " + "[" + callerClass + "/" + callerMethod + "]: "+ s);
+    }
+
+    public static void newline() { System.out.println(); }
+    public static void newline(boolean broadcast) {
+
+        if (!broadcast) {
+            return;
+        }
+
+        System.out.println();
+
+        try {
+            BufferedWriter outStream= new BufferedWriter(new FileWriter(Logger.logfile, true));
+            outStream.write(System.lineSeparator()); outStream.flush(); outStream.close();
+        } catch (IOException e) {
+            Logger.log("Couldn't write to logfile!");
+        }
+
+    }
+
+    public static void lldo(String s) {
+
+        String log_prefix = DateControl.getCurrentDate("hour"); // get special formatted date ( HOUR:MINUTE:SECOND )
+        String exact_string = " [" + log_prefix + "] " + "{LLDO}: "+ s; // build string
+
+        try {
+            BufferedWriter outStream= new BufferedWriter(new FileWriter(Logger.logfile, true));
+            outStream.write(exact_string + System.lineSeparator()); outStream.flush(); outStream.close();
+        } catch (IOException e) {
+            Logger.log("Couldn't write to logfile!");
+        }
     }
 
 }
