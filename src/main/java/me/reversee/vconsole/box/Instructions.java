@@ -8,7 +8,11 @@ public enum Instructions {
     INC, // eg. INC VAA, 2                  - increments register by value
     DEC, // eg. DEC VAA, 2                  - decrements register by value
 
+    VAR, // eg. VAR hello                   - adds a variable hello
+
     INT, // eg. INT 0xA0                    - calls an interrupt
 
     HLT, // eg. HLT                         - halt thread
+
+    DMP, // eg. DMP variable/register       - dumps variable or register
 }
