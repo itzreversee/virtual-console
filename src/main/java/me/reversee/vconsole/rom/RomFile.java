@@ -1,18 +1,21 @@
 package me.reversee.vconsole.rom;
 
+import java.util.ArrayList;
+
 public class RomFile {
 
     // Basic information
-    public static final String file_name = "";
-    public static final String file_path_absolute = "";
-    public static final String[] flags = null;
+    public static ArrayList<String> metadata = new ArrayList<String>();
+    public static String[] flags = null;
 
     // Instructions
-    public static final String[] instructions = null;
-    public static final boolean useAlternativeOpCode = false;
+    public static String file_path = "";
+    public static String file_path_absolute = "";
+    public static boolean isCMap = false;
+    public static boolean useAlternativeOpCode = false;
 
     // Signing
-    public static final boolean isSigned = false;
-    public static final boolean ignoreSignedStatus = true;
+    public static boolean isSigned = false;
+    public static boolean ignoreSignedStatus = true;
 
 }
