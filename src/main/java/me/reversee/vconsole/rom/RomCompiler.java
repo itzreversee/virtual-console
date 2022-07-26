@@ -5,11 +5,9 @@ import me.reversee.vconsole.util.FileUtil;
 import me.reversee.vconsole.util.Logger;
 import me.reversee.vconsole.util.StringTool;
 
+import java.io.*;
 import java.util.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -81,7 +79,14 @@ public class RomCompiler {
         Logger.log("Writing Compiled Map from Tokenized Source to file", Logger.logfile, true);
 
         String dot_rom_cmap_filename = StringTool.removeLastCharsUntil(filename, ".") + "rom_cmap";
-        FileUtil.writeToFile(CompiledMap.toString(), dot_rom_cmap_filename, true);
+        try{
+            FileOutputStream fos = new FileOutputStream(dot_rom_cmap_filename);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(CompiledMap);
+            os.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
