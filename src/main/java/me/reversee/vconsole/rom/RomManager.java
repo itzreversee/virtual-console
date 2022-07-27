@@ -18,7 +18,7 @@ public class RomManager {
             FileWriter writer;
             if (rom_file.createNewFile()) {
                 BufferedWriter outStream= new BufferedWriter(new FileWriter(rom_file, true));
-                outStream.write("flg 0x01" + System.lineSeparator());                       // Set flag debug
+                outStream.write("flg dbg" + System.lineSeparator());                       // Set flag debug
                 outStream.write("mov rma, \"Blank rom\" " + System.lineSeparator());        // move value "Blank rom"       --> rma ( RomManifestA ) which contains info about rom
                 outStream.write("mov pba, \"Hello, World!\" " + System.lineSeparator());    // move value "Hello, World!"   --> pba ( PrintBufferA ) which contains values that will be printed on next 0x0A call
                 outStream.write("int 0x0A " + System.lineSeparator());                      // call 0x0A which spits PrintBufferA-F content
