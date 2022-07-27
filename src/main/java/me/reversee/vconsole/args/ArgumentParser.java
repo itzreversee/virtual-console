@@ -29,13 +29,17 @@ public class ArgumentParser {
                         optionBefore = "compile_rom_source";
                         insertNextOption = true;
                     }
+                    case "source-output" -> {
+                        optionBefore = "output";
+                        insertNextOption = true;
+                    }
+                    case "skip-rsc" -> finalMap.put("skip_rsc", true);
                     case "rom" -> {
                         optionBefore = "rom_file";
                         insertNextOption = true;
                     }
                     case "debug" -> finalMap.put("debug_mode", true);
                     case "make-blank" -> finalMap.put("make_blank_rom_file", true);
-
                 }
             }
         }

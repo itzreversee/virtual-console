@@ -11,6 +11,9 @@ import me.reversee.vconsole.util.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
+import static me.reversee.vconsole.rom.CompilerOptions.OutputFile;
+import static me.reversee.vconsole.rom.CompilerOptions.SkipRsc;
+
 public class ArgumentHandler {
     public static void _handleEvents(HashMap<String, Object> arg_map) throws NotImplementedException {
         for (Map.Entry<String, Object> entry : arg_map.entrySet()) {
@@ -29,7 +32,14 @@ public class ArgumentHandler {
                 }
                 case "compile_rom_source" -> {
                     Logger.log("Compiling rom from source", Logger.logfile, true);
-                    RomCompiler.compileFromFile(String.valueOf(value));              }
+                    RomCompiler.compileFromFile(String.valueOf(value));
+                }
+                case "source_output" -> {
+                    RomCompiler.opt.put(OutputFile, value.toString());
+                }
+                case "skip_rsc" -> {
+                    RomCompiler.opt.put(SkipRsc, true);
+                }
                 case "rom_file" -> {
                     Logger.log("Loading rom file", Logger.logfile, true);
                     RomFile rf = RomManager.fromFilePath(value.toString());
