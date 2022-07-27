@@ -142,6 +142,11 @@ public class Logger {
         } catch (IOException e) {
             Logger.log("Couldn't write to logfile!");
         }
+
+        if (Logger.lldo) {
+            System.out.println(exact_string);
+        }
+
     }
 
 }
