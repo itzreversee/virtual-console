@@ -11,8 +11,10 @@ import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class RomCompiler {
+import static me.reversee.vconsole.rom.CompilerOptions.*;
 
+public class RomCompiler {
+    public static LinkedHashMap<CompilerOptions, Object> opt = new LinkedHashMap<>();
     public static void compileFromFile(String filename) {
 
         // Get source code into memory.
@@ -57,7 +59,9 @@ public class RomCompiler {
         }
 
         String dot_rtsc_filename = StringTool.removeLastCharsUntil(filename, ".") + "rtsc";
-        FileUtil.writeToFile(TokenizedSource.toString(), dot_rtsc_filename, true);
+        if (!(opt.containsKey(SkipRsc) && Boolean.valueOf(opt.get(SkipRsc).toString()) == true)) {
+            FileUtil.writeToFile(TokenizedSource.toString(), dot_rtsc_filename, true);
+        }
 
         // get compiled map
         Logger.log("Creating Compiled Map from Tokenized Source", Logger.logfile, true);
@@ -79,6 +83,9 @@ public class RomCompiler {
         Logger.log("Writing Compiled Map from Tokenized Source to file", Logger.logfile, true);
 
         String dot_rom_cmap_filename = StringTool.removeLastCharsUntil(filename, ".") + "rom_cmap";
+        if (opt.containsKey(OutputFile)) {
+            dot_rom_cmap_filename = opt.get(OutputFile).toString();
+        }
         try{
             FileOutputStream fos = new FileOutputStream(dot_rom_cmap_filename);
             ObjectOutputStream os = new ObjectOutputStream(fos);
