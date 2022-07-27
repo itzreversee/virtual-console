@@ -11,4 +11,6 @@ public enum ExecuteResults {
 
     Instruction_PerformanceFailure,
 
+    Halt,
+
 }

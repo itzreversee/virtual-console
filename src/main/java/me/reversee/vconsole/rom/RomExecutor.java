@@ -1,9 +1,6 @@
 package me.reversee.vconsole.rom;
 
-import me.reversee.vconsole.box.ExecuteResults;
-import me.reversee.vconsole.box.Instructions;
-import me.reversee.vconsole.box.Registers;
-import me.reversee.vconsole.box._tokenValues;
+import me.reversee.vconsole.box.*;
 import me.reversee.vconsole.exceptions.NotImplementedException;
 import me.reversee.vconsole.util.Logger;
 
@@ -11,8 +8,6 @@ import java.io.*;
 import java.util.*;
 
 import static me.reversee.vconsole.box.ExecuteResults.*;
-import static me.reversee.vconsole.box.Instructions.*;
-import static me.reversee.vconsole.box.Registers.*;
 
 public class RomExecutor {
 
@@ -45,38 +40,30 @@ public class RomExecutor {
             r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line);
             switch (r) {
                 case Instruction_Perfect -> {
-                    if (Logger.lldo) {
-                        Logger.lldo("Instruction " + line + " executed perfectly.");
-                    }
+                    Logger.lldo("Instruction " + line + " executed perfectly.");
                 }
                 case Instruction_Warning -> {
-                    if (Logger.lldo) {
-                        Logger.lldo("Instruction " + line + " executed with warnings.");
-                    }
+                    Logger.lldo("Instruction " + line + " executed with warnings.");
                 }
                 case Instruction_Error -> {
-                    if (Logger.lldo) {
-                        Logger.lldo("Instruction " + line + " did not execute correctly.");
-                    }
-
+                    Logger.lldo("Instruction " + line + " did not execute correctly.");
                     Logger.log("An error occurred, and function had been destroyed.", Logger.logfile, true);
                     return false;
-
                 }
                 case Instruction_PerformanceFailure -> {
-                    if (Logger.lldo) {
-                        Logger.lldo("Instruction " + line + " executed with worse performance.");
-                    }
+                    Logger.lldo("Instruction " + line + " executed with worse performance.");
                 }
                 case ToggleFlag_Debug -> {
                     Logger.lldo = true;
                     Logger.lldo("Toggling debug flag.");
                 }
                 case ToggleFlag_Retail -> {
-                    if (Logger.lldo) {
-                        Logger.lldo("Toggling retail flag.");
-                    }
+                    Logger.lldo("Toggling retail flag.");
                     Logger.lldo = false;
+                }
+                case Halt -> {
+                    Logger.lldo("Function halted");
+                    return true;
                 }
             } // Debug Results
         }
@@ -103,12 +90,15 @@ public class RomExecutor {
                 currentInstructions = Instructions.valueOf(String.valueOf(value));
                 switch (currentInstructions) {
                     case FLG -> {
-                        if (Objects.equals(String.valueOf(next.getValue()), "0x0A")) {
+                        next = it.next();       // move iterator by 1
+                        next_value  = next.getValue();  // get value
+                        if (String.valueOf(next_value).equalsIgnoreCase("dbg")) {
                             return ToggleFlag_Debug;
                         } // toggle debug on
-                        if (Objects.equals(String.valueOf(next.getValue()), "0x0B")) {
+                        if (String.valueOf(next_value).equalsIgnoreCase("no-dbg")) {
                             return ToggleFlag_Retail;
                         } // toggle debug off
+                        return Instruction_Warning;
                     }
                     case MOV -> {
                         next = it.next();       // move iterator by 1
@@ -119,83 +109,276 @@ public class RomExecutor {
                         }
                         Registers reg = Registers.valueOf(String.valueOf(next_value));
                         next = it.next();       // move iterator by 1
-                        next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
-                        if (!(next_key == _tokenValues.ValueAny)) {
-                            return Instruction_Error;
-                        }
+                        Object val = next_value;
                         switch (reg) {
                             case RMA -> {
-                                VirtualMachineMemory.REGISTER_RMA = next_value;
+                                VirtualMachineMemory.REGISTER_RMA = val;
+                                return Instruction_Perfect;
                             }
                             case RMB -> {
-                                VirtualMachineMemory.REGISTER_RMB = next_value;
+                                VirtualMachineMemory.REGISTER_RMB = val;
+                                return Instruction_Perfect;
                             }
                             case RMC -> {
-                                VirtualMachineMemory.REGISTER_RMC = next_value;
+                                VirtualMachineMemory.REGISTER_RMC = val;
+                                return Instruction_Perfect;
                             }
                             case RMD -> {
-                                VirtualMachineMemory.REGISTER_RMD = next_value;
+                                VirtualMachineMemory.REGISTER_RMD = val;
+                                return Instruction_Perfect;
                             }
-
                             case PBA -> {
-                                VirtualMachineMemory.REGISTER_PBA = next_value;
+                                VirtualMachineMemory.REGISTER_PBA = val;
+                                return Instruction_Perfect;
                             }
                             case PBB -> {
-                                VirtualMachineMemory.REGISTER_PBB = next_value;
+                                VirtualMachineMemory.REGISTER_PBB = val;
+                                return Instruction_Perfect;
                             }
                             case PBC -> {
-                                VirtualMachineMemory.REGISTER_PBC = next_value;
+                                VirtualMachineMemory.REGISTER_PBC = val;
+                                return Instruction_Perfect;
                             }
                             case PBD -> {
-                                VirtualMachineMemory.REGISTER_PBD = next_value;
+                                VirtualMachineMemory.REGISTER_PBD = val;
+                                return Instruction_Perfect;
                             }
                             case PBE -> {
-                                VirtualMachineMemory.REGISTER_PBE = next_value;
+                                VirtualMachineMemory.REGISTER_PBE = val;
+                                return Instruction_Perfect;
                             }
                             case PBF -> {
-                                VirtualMachineMemory.REGISTER_PBF = next_value;
+                                VirtualMachineMemory.REGISTER_PBF = val;
+                                return Instruction_Perfect;
+                            }
+                            default -> {
+                                return Instruction_Warning;
                             }
                         }
-
                     }
-                    case ADD -> {
+                    case MVA -> {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
                         if (!(next_key == _tokenValues.Address)) {
                             return Instruction_Error;
                         }
+                        Registers reg = Registers.valueOf(String.valueOf(next_value));
+                        next = it.next();       // move iterator by 1
+                        next_key  = next.getKey();  // get value
+                        next_value  = next.getValue();  // get value
+                        Object val = Registers.valueOf(String.valueOf(next_value));
+                        System.out.println(val);
+                        if (!(next_key == _tokenValues.Address)) {
+                            return Instruction_Error;
+                        }
+                        switch (reg) {
+                            case RMA -> {
+                                VirtualMachineMemory.REGISTER_RMA = val;
+                                return Instruction_Perfect;
+                            }
+                            case RMB -> {
+                                VirtualMachineMemory.REGISTER_RMB = val;
+                                return Instruction_Perfect;
+                            }
+                            case RMC -> {
+                                VirtualMachineMemory.REGISTER_RMC = val;
+                                return Instruction_Perfect;
+                            }
+                            case RMD -> {
+                                VirtualMachineMemory.REGISTER_RMD = val;
+                                return Instruction_Perfect;
+                            }
+                            case PBA -> {
+                                VirtualMachineMemory.REGISTER_PBA = val;
+                                return Instruction_Perfect;
+                            }
+                            case PBB -> {
+                                VirtualMachineMemory.REGISTER_PBB = val;
+                                return Instruction_Perfect;
+                            }
+                            case PBC -> {
+                                VirtualMachineMemory.REGISTER_PBC = val;
+                                return Instruction_Perfect;
+                            }
+                            case PBD -> {
+                                VirtualMachineMemory.REGISTER_PBD = val;
+                                return Instruction_Perfect;
+                            }
+                            case PBE -> {
+                                VirtualMachineMemory.REGISTER_PBE = val;
+                                return Instruction_Perfect;
+                            }
+                            case PBF -> {
+                                VirtualMachineMemory.REGISTER_PBF = val;
+                                return Instruction_Perfect;
+                            }
+                            default -> {
+                                return Instruction_Warning;
+                            }
+                        }
+                    }
+                    case ADD, INC -> {
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.Address)) {
+                            return Instruction_Error;
+                        }
                         Registers reg = Registers.valueOf(String.valueOf(next.getValue()));
                         next = it.next();       // move iterator by 1
-                        next_key    = next.getKey();    // get key
-                        next_value  = next.getValue();  // get value
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
                         if (!(next_key == _tokenValues.ValueInteger)) {
                             return Instruction_Error;
                         }
-                    }
-                    case INC -> {
-
+                        // add
+                        switch (reg) {
+                            case PBA -> {
+                                VirtualMachineMemory.REGISTER_PBA = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBA;
+                                return Instruction_Perfect;
+                            }
+                            case PBB -> {
+                                VirtualMachineMemory.REGISTER_PBB = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBB;
+                                return Instruction_Perfect;
+                            }
+                            case PBC -> {
+                                VirtualMachineMemory.REGISTER_PBC = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBC;
+                                return Instruction_Perfect;
+                            }
+                            case PBD -> {
+                                VirtualMachineMemory.REGISTER_PBD = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBD;
+                                return Instruction_Perfect;
+                            }
+                            case PBE -> {
+                                VirtualMachineMemory.REGISTER_PBE = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBE;
+                                return Instruction_Perfect;
+                            }
+                            case PBF -> {
+                                VirtualMachineMemory.REGISTER_PBF = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBF;
+                                return Instruction_Perfect;
+                            }
+                        }
+                        return Instruction_Warning;
                     }
                     case DEC -> {
-
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.Address)) {
+                            return Instruction_Error;
+                        }
+                        Registers reg = Registers.valueOf(String.valueOf(next.getValue()));
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.ValueInteger)) {
+                            return Instruction_Error;
+                        }
+                        // add
+                        switch (reg) {
+                            case PBA -> {
+                                VirtualMachineMemory.REGISTER_PBA = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBA;
+                                return Instruction_Perfect;
+                            }
+                            case PBB -> {
+                                VirtualMachineMemory.REGISTER_PBB = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBB;
+                                return Instruction_Perfect;
+                            }
+                            case PBC -> {
+                                VirtualMachineMemory.REGISTER_PBC = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBC;
+                                return Instruction_Perfect;
+                            }
+                            case PBD -> {
+                                VirtualMachineMemory.REGISTER_PBD = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBD;
+                                return Instruction_Perfect;
+                            }
+                            case PBE -> {
+                                VirtualMachineMemory.REGISTER_PBE = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBE;
+                                return Instruction_Perfect;
+                            }
+                            case PBF -> {
+                                VirtualMachineMemory.REGISTER_PBF = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBF;
+                                return Instruction_Perfect;
+                            }
+                        }
+                        return Instruction_Warning;
                     }
                     case VAR -> {
-
+                        return Instruction_Warning; // not implemented
                     }
                     case INT -> {
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.HexadecimalAddress)) {
+                            return Instruction_Error;
+                        }
+                        Interrupts r = Interrupts.valueOf(String.valueOf(next.getValue()));
+                        // add
+                        switch (r) {
+                            case INT_0X0A -> {
+                                LinkedList<Object> l = new LinkedList<>();
+                                l.add(VirtualMachineMemory.REGISTER_PBA);
+                                l.add(VirtualMachineMemory.REGISTER_PBB);
+                                l.add(VirtualMachineMemory.REGISTER_PBC);
+                                l.add(VirtualMachineMemory.REGISTER_PBD);
+                                l.add(VirtualMachineMemory.REGISTER_PBE);
+                                l.add(VirtualMachineMemory.REGISTER_PBF);
 
+                                for (Object o : l) {
+                                    if (o == null)
+                                        continue;
+                                    System.out.print(o.toString());
+                                }
+                                return Instruction_Perfect;
+                            }
+                            case INT_0X0B -> {
+                                VirtualMachineMemory.REGISTER_PBA = null;
+                                VirtualMachineMemory.REGISTER_PBB = null;
+                                VirtualMachineMemory.REGISTER_PBC = null;
+                                VirtualMachineMemory.REGISTER_PBD = null;
+                                VirtualMachineMemory.REGISTER_PBE = null;
+                                VirtualMachineMemory.REGISTER_PBF = null;
+                                return Instruction_Perfect;
+                            }
+                        }
+                        return Instruction_Warning;
                     }
                     case HLT -> {
-
+                        return Halt;
                     }
-
                     case DMP -> {
-
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.ValueDebugString)) {
+                            return Instruction_Error;
+                        }
+                        String d = next_value.toString();
+                        if (Objects.equals(d, "Memory")) {
+                            Logger.lldo("Memory Dump:");
+                            Logger.lldo(" REGISTER_RMA: " + VirtualMachineMemory.REGISTER_RMA);
+                            Logger.lldo(" REGISTER_RMB: " + VirtualMachineMemory.REGISTER_RMB);
+                            Logger.lldo(" REGISTER_RMC: " + VirtualMachineMemory.REGISTER_RMC);
+                            Logger.lldo(" REGISTER_RMD: " + VirtualMachineMemory.REGISTER_RMD);
+                            Logger.lldo(" REGISTER_PBA: " + VirtualMachineMemory.REGISTER_PBA);
+                            Logger.lldo(" REGISTER_PBB: " + VirtualMachineMemory.REGISTER_PBB);
+                            Logger.lldo(" REGISTER_PBC: " + VirtualMachineMemory.REGISTER_PBC);
+                            Logger.lldo(" REGISTER_PBD: " + VirtualMachineMemory.REGISTER_PBD);
+                            Logger.lldo(" REGISTER_PBE: " + VirtualMachineMemory.REGISTER_PBE);
+                            Logger.lldo(" REGISTER_PBF: " + VirtualMachineMemory.REGISTER_PBF);
+                            Logger.lldo("End dump");
+                            return Instruction_Perfect;
+                        }
+                        return Instruction_Warning;
+                    }
+                    default -> {
+                        return Instruction_Warning;
                     }
                 }
             }
-
         return Instruction_Warning;
     }
 
