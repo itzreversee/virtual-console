@@ -74,7 +74,7 @@ public class Tokenizer {
             if (i == 1) {
                 Logger.newline(true);
                 Logger.log("Check instruction " + output, Logger.logfile, true);
-                compiledTokenizedString.put(_tokenValues.Instruction, output);
+                compiledTokenizedString.put(_tokenValues.Instruction, output.toString().toUpperCase());
                 ci = Instructions.valueOf((output.toString().toUpperCase()));
                 compileSet = getInstructionCompileSet(ci);
             } else if (i > 1) {
@@ -82,15 +82,22 @@ public class Tokenizer {
                 try {
                     Registers.valueOf((output.toString().toUpperCase()));
                     Logger.log("Valid!", Logger.logfile, true);
-                    compiledTokenizedString.put(compileSet.get(i - 2), output);
+                    compiledTokenizedString.put(compileSet.get(i - 2), output.toString().toUpperCase());
                     continue;
                 } catch (Exception e) {
                     DoNothing.invoke();
                 }
-
                 if (isTokenValueValid(output, compileSet.get(i - 2))) {
                     Logger.log("Valid!", Logger.logfile, true);
-                    compiledTokenizedString.put(compileSet.get(i - 2), output);
+
+                    if (isTokenValueValid(output, _tokenValues.Address)) {
+                        compiledTokenizedString.put(compileSet.get(i - 2), output.toString().toUpperCase());
+                    } else if (isTokenValueValid(output, _tokenValues.HexadecimalAddress)) {
+                        compiledTokenizedString.put(compileSet.get(i - 2), "INT_" + output.toString().toUpperCase());
+                    } else {
+                        compiledTokenizedString.put(compileSet.get(i - 2), output);
+                    }
+
                 } else {
                     System.out.println("Compiler error! Instruction needs " + compileSet.get(i));
                 }
@@ -113,7 +120,8 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.Address);
                 compiledTokenizedString.add(_tokenValues.ValueInteger);
             }
-            case FLG, INT -> compiledTokenizedString.add(_tokenValues.HexadecimalAddress);
+            case FLG, DMP -> compiledTokenizedString.add(_tokenValues.ValueDebugString);
+            case INT -> compiledTokenizedString.add(_tokenValues.HexadecimalAddress);
         }
 
         return compiledTokenizedString;
@@ -121,6 +129,14 @@ public class Tokenizer {
 
     public static boolean isTokenValueValid(Object value, _tokenValues target) {
         if (target == _tokenValues.ValueAny) { return true; }
+        else if ( target == _tokenValues.ValueDebugString )  {
+            if (value.toString().equalsIgnoreCase("MEMORY")) {
+                return true;
+            } else if (value.toString().equalsIgnoreCase("DBG") || (value.toString().equalsIgnoreCase("NO-DBG")) ){
+                return true;
+            }
+            return false;
+        }
         else if (value instanceof String    && target == _tokenValues.ValueString)  { return true; }
         else if (value instanceof Integer   && target == _tokenValues.ValueInteger) { return true; }
         else if (value instanceof Boolean   && target == _tokenValues.ValueBoolean) { return true; }
