@@ -16,6 +16,6 @@ public class VirtualMachineMemory {
     public static Object REGISTER_PBE = null;
     public static Object REGISTER_PBF = null;
 
-    public static ArrayList<LinkedHashMap<String, Object>> Variables;
+    public static LinkedHashMap<String, Object> Variables;
 
 }
