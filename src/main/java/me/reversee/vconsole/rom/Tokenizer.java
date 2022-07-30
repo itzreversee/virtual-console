@@ -13,7 +13,7 @@ public class Tokenizer {
 
     /* eg. Turns " mov PBA, "Hello, World" "
      * into ->  "mov",          "pba",       "Hello, World!"
-     *          "Instruction",  "Address",   "Value-string"
+     *          "Instruction",  "Address",   "ValueString"
      */
 
     // breaks string into pieces
@@ -40,15 +40,10 @@ public class Tokenizer {
                 // check how many tokens were skipped
                 skip = getTokenCount(TokenBuffer);
             }
-
             if (TokenBuffer.endsWith(",")) { TokenBuffer = StringTool.removeLastChar(TokenBuffer); }
-
             TokenizedArray.add(TokenBuffer);
-
         }
-
         return TokenizedArray;
-
     }
 
     public static Integer getTokenCount(String str) {
@@ -68,6 +63,7 @@ public class Tokenizer {
         int i;
 
         while (tokens.hasNext()) {
+
             output = tokens.next();
             i = tokens.nextIndex();
 
@@ -84,9 +80,7 @@ public class Tokenizer {
                     Logger.log("Valid!", Logger.logfile, true);
                     compiledTokenizedString.put(compileSet.get(i - 2), output.toString().toUpperCase());
                     continue;
-                } catch (Exception e) {
-                    DoNothing.invoke();
-                }
+                } catch (Exception ignored) {}
                 if (isTokenValueValid(output, compileSet.get(i - 2))) {
                     Logger.log("Valid!", Logger.logfile, true);
 
@@ -97,14 +91,11 @@ public class Tokenizer {
                     } else {
                         compiledTokenizedString.put(compileSet.get(i - 2), output);
                     }
-
                 } else {
                     System.out.println("Compiler error! Instruction needs " + compileSet.get(i));
                 }
             }
-
         }
-
         return compiledTokenizedString;
     }
 
