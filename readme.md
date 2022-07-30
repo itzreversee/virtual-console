@@ -1,5 +1,5 @@
 ### virtual console 
-version 0.3  
+version 0.4
 
 My virtual console like app, written in java.
 
