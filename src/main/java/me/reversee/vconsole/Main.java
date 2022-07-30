@@ -10,6 +10,10 @@ import java.util.HashMap;
 
 public class Main {
 
+    public static int _version_major = 0;
+    public static int _version_minor = 3;
+    public static String _version_string = String.valueOf(_version_major + _version_minor);
+
     public static void main(String[] args) throws NotImplementedException {
 
         HashMap<String, Object> arg_map = ArgumentParser.getArgumentHashMap(args);
@@ -22,6 +26,7 @@ public class Main {
 
         // Launch here!
         Logger.logfile = Logger.init(); // INIT LOG
+        Logger.log("Virtual-Console version " + _version_string, Logger.logfile, true);
 
         // Prepare workspace
         Workspace.prepare();
