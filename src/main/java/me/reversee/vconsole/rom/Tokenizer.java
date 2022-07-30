@@ -85,7 +85,7 @@ public class Tokenizer {
                     Logger.log("Valid!", Logger.logfile, true);
                     if (isTokenValueValid(output, _tokenValues.Address)) {
                         compiledTokenizedString.put(compileSet.get(i - 2), output.toString().toUpperCase());
-                    } else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) ) {
+                    } else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.Variable) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) ) {
                         String fo = output.toString();
                         if (fo.startsWith("\"")) { // format string
                             fo = StringTool.removeFirstChar(fo); // remove first quote
@@ -122,8 +122,8 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.AddressB);
             }
             case MVV -> {
-                compiledTokenizedString.add(_tokenValues.Address);
-                compiledTokenizedString.add(_tokenValues.ValueString);
+                compiledTokenizedString.add(_tokenValues.Variable);
+                compiledTokenizedString.add(_tokenValues.ValueAny);
             }
             case ADD, INC, DEC -> {
                 compiledTokenizedString.add(_tokenValues.Address);
@@ -147,6 +147,7 @@ public class Tokenizer {
             }
             return false;
         }
+        else if (value instanceof String    && target == _tokenValues.Variable)  { return true; }
         else if (value instanceof String    && target == _tokenValues.ValueString)  { return true; }
         else if (value instanceof Integer   && target == _tokenValues.ValueInteger) { return true; }
         else if (value instanceof Boolean   && target == _tokenValues.ValueBoolean) { return true; }

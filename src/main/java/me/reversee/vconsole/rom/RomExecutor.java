@@ -155,7 +155,7 @@ public class RomExecutor {
                                 return Instruction_Warning;
                             }
                         }
-                    }
+                    }  // move ValueAny into Address
                     case MVA -> {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
@@ -252,7 +252,58 @@ public class RomExecutor {
                                 return Instruction_Warning;
                             }
                         }
-                    }
+                    } // move Address into Address
+                    case MVV -> {
+                        next = it.next();       // move iterator by 1
+                        next_key    = next.getKey();    // get key
+                        next_value  = next.getValue();  // get value
+                        String variable_name = String.valueOf(next_value);
+                        if (!(next_key == _tokenValues.Variable)  // check if it is a variable
+                                && !(VirtualMachineMemory.Variables.containsKey(variable_name))) { // check if variable exists
+                            return Instruction_Error;
+                        }
+                        next = it.next(); // move iterator by 1
+                        next_value  = next.getValue();  // get value
+                        Object variable_value;
+                        variable_value = next_value; // get value
+                        try {
+                            Registers reg = Registers.valueOf(String.valueOf(next_value));
+                            switch (reg) {  // write
+                                case RMA -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_RMA;
+                                }
+                                case RMB -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_RMB;
+                                }
+                                case RMC -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_RMC;
+                                }
+                                case RMD -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_RMD;
+                                }
+                                case PBA -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_PBA;
+                                }
+                                case PBB -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_PBB;
+                                }
+                                case PBC -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_PBC;
+                                }
+                                case PBD -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_PBD;
+                                }
+                                case PBE -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_PBE;
+                                }
+                                case PBF -> {
+                                    variable_value = VirtualMachineMemory.REGISTER_PBF;
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                        VirtualMachineMemory.Variables.put(variable_name, variable_value);
+                        return Instruction_Perfect;
+                    } // move ValueAny or Register into Variable
                     case ADD, INC -> {
                         next = it.next();       // move iterator by 1
                         next_key = next.getKey();    // get key
@@ -348,6 +399,7 @@ public class RomExecutor {
                         }
                         String variable_name = String.valueOf(next_value);
                         VirtualMachineMemory.Variables.put(variable_name, null);
+                        return Instruction_Perfect;
                     }
                     case INT -> {
                         next = it.next();       // move iterator by 1

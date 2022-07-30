@@ -9,6 +9,7 @@ public enum _tokenValues {
     Target,             // used for jump targets
     Section,            // used for sections
 
+    Variable,           // used for variables
     ValueAny,           // used for defining unknown value when getting compile set
     ValueString,        // used for strings
     ValueInteger,       // used for integers
