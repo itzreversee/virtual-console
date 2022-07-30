@@ -87,7 +87,6 @@ public class Tokenizer {
                         compiledTokenizedString.put(compileSet.get(i - 2), output.toString().toUpperCase());
                     } else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) ) {
                         String fo = output.toString();
-                        System.out.println(fo);
                         if (fo.startsWith("\"")) { // format string
                             fo = StringTool.removeFirstChar(fo); // remove first quote
                             fo = StringTool.removeLastChar(fo); // remove last quote
