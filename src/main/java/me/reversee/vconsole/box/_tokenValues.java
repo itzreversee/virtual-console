@@ -5,6 +5,7 @@ public enum _tokenValues {
     None,               // used for non-existing value ( instruction that does not need further values )
     Instruction,        // used for instructions
     Address,            // used for addresses
+    AddressB,           // used for addresses ( if multiple in same hashmap )
     Target,             // used for jump targets
     Section,            // used for sections
 
