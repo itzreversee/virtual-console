@@ -1,11 +1,11 @@
 package me.reversee.vconsole.args;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class ArgumentParser {
-    public static HashMap<String, Object> getArgumentHashMap(String[] args) {
+    public static LinkedHashMap<String, Object> getArgumentHashMap(String[] args) {
 
-        HashMap<String, Object> finalMap = new HashMap<>();
+        LinkedHashMap<String, Object> finalMap = new LinkedHashMap<>();
 
         boolean insertNextOption = false;
         String optionBefore = "";
@@ -23,17 +23,17 @@ public class ArgumentParser {
                 String option_type = sb.toString();
 
                 switch (option_type) { // check what option is it
+                    case "skip-rtsc" -> finalMap.put("skip_rtsc", true);
                     case "clear-cache" -> finalMap.put("clear_cache", true);
                     case "clear-logs" ->  finalMap.put("clear_logs", true);
-                    case "compile-rom-source" -> {
-                        optionBefore = "compile_rom_source";
-                        insertNextOption = true;
-                    }
                     case "source-output" -> {
                         optionBefore = "output";
                         insertNextOption = true;
                     }
-                    case "skip-rsc" -> finalMap.put("skip_rsc", true);
+                    case "compile-rom-source" -> {
+                        optionBefore = "compile_rom_source";
+                        insertNextOption = true;
+                    }
                     case "rom" -> {
                         optionBefore = "rom_file";
                         insertNextOption = true;
@@ -46,7 +46,7 @@ public class ArgumentParser {
         return finalMap;
     }
 
-    public static boolean argumentMeetRequirements(HashMap<String, Object> arg_map) {
+    public static boolean argumentMeetRequirements(LinkedHashMap<String, Object> arg_map) {
         boolean containsRequiredKeys = false;
 
         if (arg_map.containsKey("rom_file")) {
@@ -58,7 +58,6 @@ public class ArgumentParser {
         } else if (arg_map.containsKey("clear_logs") || arg_map.containsKey("clear_cache")) {
             containsRequiredKeys = true;
         }
-
 
         return containsRequiredKeys;
     }

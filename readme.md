@@ -11,7 +11,7 @@ Here is the list of available parameters:
  * ```--make-blank``` create sample rom source code file
  * ```--compile-rom-source``` compiles rom source to ```.rtsc``` file (RomTokenizedSourceCode) and ```.rom_cmap```(Rom_CompiledMap) which contains readable to vc Map of Instructions and Parameters like Registers or Values.  
  * ```--source-output``` specifies output ```.rom_cmap``` output location
- * ```--skip-rsc``` skips writing ```.rsc``` file 
+ * ```--skip-rtsc``` skips writing ```.rtsc``` file 
  * ```--rom``` launches rom inside vc 
  * ```--clear-cache``` clears cache **(not implemented yet)**
  * ```--clear-logs``` clears logs **(not implemented yet)**

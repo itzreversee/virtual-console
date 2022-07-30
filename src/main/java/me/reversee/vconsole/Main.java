@@ -7,6 +7,7 @@ import me.reversee.vconsole.util.Logger;
 import me.reversee.vconsole.util.Workspace;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Main {
 
@@ -16,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws NotImplementedException {
 
-        HashMap<String, Object> arg_map = ArgumentParser.getArgumentHashMap(args);
+        LinkedHashMap<String, Object> arg_map = ArgumentParser.getArgumentHashMap(args);
 
         // Debug: skip this
         if (!ArgumentParser.argumentMeetRequirements(arg_map)) {

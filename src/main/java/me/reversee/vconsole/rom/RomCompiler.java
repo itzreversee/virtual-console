@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import static me.reversee.vconsole.rom.CompilerOptions.*;
 
 public class RomCompiler {
-    public static LinkedHashMap<CompilerOptions, Object> opt = new LinkedHashMap<>();
+    public static LinkedHashMap<CompilerOptions, Object> opt = new LinkedHashMap<CompilerOptions, Object>();
     public static void compileFromFile(String filename) {
 
         // Get source code into memory.
@@ -59,7 +59,7 @@ public class RomCompiler {
         }
 
         String dot_rtsc_filename = StringTool.removeLastCharsUntil(filename, ".") + "rtsc";
-        if (!(opt.containsKey(SkipRsc) && Boolean.valueOf(opt.get(SkipRsc).toString()) == true)) {
+        if (!(opt.containsKey(SkipRtsc) && Boolean.parseBoolean(opt.get(SkipRtsc).toString()))) {
             FileUtil.writeToFile(TokenizedSource.toString(), dot_rtsc_filename, true);
         }
 
