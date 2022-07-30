@@ -83,9 +83,20 @@ public class Tokenizer {
                 } catch (Exception ignored) {}
                 if (isTokenValueValid(output, compileSet.get(i - 2))) {
                     Logger.log("Valid!", Logger.logfile, true);
-
                     if (isTokenValueValid(output, _tokenValues.Address)) {
                         compiledTokenizedString.put(compileSet.get(i - 2), output.toString().toUpperCase());
+                    } else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) ) {
+                        String fo = output.toString();
+                        System.out.println(fo);
+                        if (fo.startsWith("\"")) { // format string
+                            fo = StringTool.removeFirstChar(fo); // remove first quote
+                            fo = StringTool.removeLastChar(fo); // remove last quote
+                        }
+                        fo = fo.replace("\\n", System.lineSeparator()); // \n -> newline
+                        fo = fo.replace("\\t", "\t"); // \t -> tab
+                        fo = fo.replace("\\b", "\b"); // \b -> backspace
+                        fo = fo.replace("\\r", "\r"); // \r -> carriage return
+                        compiledTokenizedString.put(_tokenValues.ValueAny, fo);
                     } else if (isTokenValueValid(output, _tokenValues.HexadecimalAddress)) {
                         compiledTokenizedString.put(compileSet.get(i - 2), "INT_" + output.toString().toUpperCase());
                     } else {
@@ -109,7 +120,7 @@ public class Tokenizer {
             }
             case MVA -> {
                 compiledTokenizedString.add(_tokenValues.Address);
-                compiledTokenizedString.add(_tokenValues.Address);
+                compiledTokenizedString.add(_tokenValues.AddressB);
             }
             case MVV -> {
                 compiledTokenizedString.add(_tokenValues.Address);
