@@ -95,7 +95,7 @@ public class Tokenizer {
                         fo = fo.replace("\\t", "\t"); // \t -> tab
                         fo = fo.replace("\\b", "\b"); // \b -> backspace
                         fo = fo.replace("\\r", "\r"); // \r -> carriage return
-                        compiledTokenizedString.put(_tokenValues.ValueAny, fo);
+                        compiledTokenizedString.put(_tokenValues.ValueString, fo);
                     } else if (isTokenValueValid(output, _tokenValues.HexadecimalAddress)) {
                         compiledTokenizedString.put(compileSet.get(i - 2), "INT_" + output.toString().toUpperCase());
                     } else {

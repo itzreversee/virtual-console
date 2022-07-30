@@ -340,7 +340,14 @@ public class RomExecutor {
                         return Instruction_Warning;
                     }
                     case VAR -> {
-                        return Instruction_Warning; // not implemented
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.ValueString)) {
+                            return Instruction_Error;
+                        }
+                        String variable_name = String.valueOf(next_value);
+                        VirtualMachineMemory.Variables.put(variable_name, null);
                     }
                     case INT -> {
                         next = it.next();       // move iterator by 1
@@ -403,6 +410,7 @@ public class RomExecutor {
                             Logger.lldo(" REGISTER_PBD: " + VirtualMachineMemory.REGISTER_PBD);
                             Logger.lldo(" REGISTER_PBE: " + VirtualMachineMemory.REGISTER_PBE);
                             Logger.lldo(" REGISTER_PBF: " + VirtualMachineMemory.REGISTER_PBF);
+                            Logger.lldo(" Variable Table: " + VirtualMachineMemory.Variables);
                             Logger.lldo("End dump");
                             return Instruction_Perfect;
                         }
