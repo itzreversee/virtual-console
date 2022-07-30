@@ -116,11 +116,20 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.Address);
                 compiledTokenizedString.add(_tokenValues.ValueAny);
             }
+            case MVA -> {
+                compiledTokenizedString.add(_tokenValues.Address);
+                compiledTokenizedString.add(_tokenValues.Address);
+            }
+            case MVV -> {
+                compiledTokenizedString.add(_tokenValues.Address);
+                compiledTokenizedString.add(_tokenValues.ValueString);
+            }
             case ADD, INC, DEC -> {
                 compiledTokenizedString.add(_tokenValues.Address);
                 compiledTokenizedString.add(_tokenValues.ValueInteger);
             }
             case FLG, DMP -> compiledTokenizedString.add(_tokenValues.ValueDebugString);
+            case VAR -> compiledTokenizedString.add(_tokenValues.ValueString);
             case INT -> compiledTokenizedString.add(_tokenValues.HexadecimalAddress);
         }
 

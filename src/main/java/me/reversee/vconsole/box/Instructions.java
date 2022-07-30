@@ -5,6 +5,7 @@ public enum Instructions {
 
     MOV, // eg. mov PBA, "Hello, World!"    - moves value into register
     MVA, // eg. mov PBA, PBB                - moves register into another register
+    MVV, // eg. mov PBA, hello              - moves variable into register
     ADD, // eg. add VAA, 10                 - adds value to register
     INC, // eg. INC VAA, 2                  - increments register by value
     DEC, // eg. DEC VAA, 2                  - decrements register by value
