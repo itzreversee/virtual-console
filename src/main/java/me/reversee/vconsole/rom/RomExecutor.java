@@ -25,7 +25,6 @@ public class RomExecutor {
         boolean result;
 
         result = parseCMapInstructions(CompiledMap);
-
     }
 
     public static void executeRomFile(RomFile rom) throws NotImplementedException {
@@ -168,12 +167,47 @@ public class RomExecutor {
                         next = it.next();       // move iterator by 1
                         next_key  = next.getKey();  // get value
                         next_value  = next.getValue();  // get value
-                        Object val = Registers.valueOf(String.valueOf(next_value));
-                        System.out.println(val);
-                        if (!(next_key == _tokenValues.Address)) {
+                        if (!(next_key == _tokenValues.AddressB)) {
                             return Instruction_Error;
                         }
-                        switch (reg) {
+                        Registers move_reg = Registers.valueOf(String.valueOf(next_value));
+                        Object val = null;
+                        switch (move_reg) { // get source
+                            case RMA -> {
+                                val = VirtualMachineMemory.REGISTER_RMA;
+                            }
+                            case RMB -> {
+                                val =VirtualMachineMemory.REGISTER_RMB;
+                            }
+                            case RMC -> {
+                                val = VirtualMachineMemory.REGISTER_RMC;
+                            }
+                            case RMD -> {
+                                val = VirtualMachineMemory.REGISTER_RMD;
+                            }
+                            case PBA -> {
+                                val = VirtualMachineMemory.REGISTER_PBA;
+                            }
+                            case PBB -> {
+                                val = VirtualMachineMemory.REGISTER_PBB;
+                            }
+                            case PBC -> {
+                                val = VirtualMachineMemory.REGISTER_PBC;
+                            }
+                            case PBD -> {
+                                val = VirtualMachineMemory.REGISTER_PBD;
+                            }
+                            case PBE -> {
+                                val = VirtualMachineMemory.REGISTER_PBE;
+                            }
+                            case PBF -> {
+                                val = VirtualMachineMemory.REGISTER_PBF;
+                            }
+                            default -> {
+                                return Instruction_Warning;
+                            }
+                        }
+                        switch (reg) {  // write
                             case RMA -> {
                                 VirtualMachineMemory.REGISTER_RMA = val;
                                 return Instruction_Perfect;
