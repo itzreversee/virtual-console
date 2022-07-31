@@ -85,7 +85,15 @@ public class Tokenizer {
                     Logger.log("Valid!", Logger.logfile, true);
                     if (isTokenValueValid(output, _tokenValues.Address)) {
                         compiledTokenizedString.put(compileSet.get(i - 2), output.toString().toUpperCase());
-                    } else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.Variable) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) ) {
+                    }
+                    else if (compileSet.get(i - 2) == _tokenValues.VariableOrAddress) {
+                        if (output.toString().length() == 3) {
+                            compiledTokenizedString.put(_tokenValues.Address, output);
+                        } else {
+                            compiledTokenizedString.put(_tokenValues.Variable, output);
+                        }
+                    }
+                    else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.Variable) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) ) {
                         String fo = output.toString();
                         if (fo.startsWith("\"")) { // format string
                             fo = StringTool.removeFirstChar(fo); // remove first quote
@@ -96,9 +104,11 @@ public class Tokenizer {
                         fo = fo.replace("\\b", "\b"); // \b -> backspace
                         fo = fo.replace("\\r", "\r"); // \r -> carriage return
                         compiledTokenizedString.put(_tokenValues.ValueString, fo);
-                    } else if (isTokenValueValid(output, _tokenValues.HexadecimalAddress)) {
+                    }
+                    else if (isTokenValueValid(output, _tokenValues.HexadecimalAddress)) {
                         compiledTokenizedString.put(compileSet.get(i - 2), "INT_" + output.toString().toUpperCase());
-                    } else {
+                    }
+                    else {
                         compiledTokenizedString.put(compileSet.get(i - 2), output);
                     }
                 } else {
@@ -119,7 +129,7 @@ public class Tokenizer {
             }
             case MVA -> {
                 compiledTokenizedString.add(_tokenValues.Address);
-                compiledTokenizedString.add(_tokenValues.AddressB);
+                compiledTokenizedString.add(_tokenValues.VariableOrAddress);
             }
             case MVV -> {
                 compiledTokenizedString.add(_tokenValues.Variable);
@@ -147,7 +157,8 @@ public class Tokenizer {
             }
             return false;
         }
-        else if (value instanceof String    && target == _tokenValues.Variable)  { return true; }
+        else if (value instanceof String    && target == _tokenValues.VariableOrAddress)  { return true; }
+        else if (value instanceof String    && target == _tokenValues.Variable)      { return true; }
         else if (value instanceof String    && target == _tokenValues.ValueString)  { return true; }
         else if (value instanceof Integer   && target == _tokenValues.ValueInteger) { return true; }
         else if (value instanceof Boolean   && target == _tokenValues.ValueBoolean) { return true; }

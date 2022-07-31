@@ -10,6 +10,7 @@ public enum _tokenValues {
     Section,            // used for sections
 
     Variable,           // used for variables
+    VariableOrAddress,  // used for variables OR addresses
     ValueAny,           // used for defining unknown value when getting compile set
     ValueString,        // used for strings
     ValueInteger,       // used for integers

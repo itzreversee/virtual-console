@@ -157,55 +157,61 @@ public class RomExecutor {
                         }
                     }  // move ValueAny into Address
                     case MVA -> {
+                        Object val = null;
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
-                        if (!(next_key == _tokenValues.Address)) {
+                        Registers reg;
+                        if (next_key == _tokenValues.Address) {
+                            reg = Registers.valueOf(String.valueOf(next_value));
+                        } else {
                             return Instruction_Error;
                         }
-                        Registers reg = Registers.valueOf(String.valueOf(next_value));
                         next = it.next();       // move iterator by 1
                         next_key  = next.getKey();  // get value
                         next_value  = next.getValue();  // get value
-                        if (!(next_key == _tokenValues.AddressB)) {
+                        if (next_key == _tokenValues.AddressB) {
+                            Registers move_reg = Registers.valueOf(String.valueOf(next_value));
+                            switch (move_reg) { // get source
+                                case RMA -> {
+                                    val = VirtualMachineMemory.REGISTER_RMA;
+                                }
+                                case RMB -> {
+                                    val =VirtualMachineMemory.REGISTER_RMB;
+                                }
+                                case RMC -> {
+                                    val = VirtualMachineMemory.REGISTER_RMC;
+                                }
+                                case RMD -> {
+                                    val = VirtualMachineMemory.REGISTER_RMD;
+                                }
+                                case PBA -> {
+                                    val = VirtualMachineMemory.REGISTER_PBA;
+                                }
+                                case PBB -> {
+                                    val = VirtualMachineMemory.REGISTER_PBB;
+                                }
+                                case PBC -> {
+                                    val = VirtualMachineMemory.REGISTER_PBC;
+                                }
+                                case PBD -> {
+                                    val = VirtualMachineMemory.REGISTER_PBD;
+                                }
+                                case PBE -> {
+                                    val = VirtualMachineMemory.REGISTER_PBE;
+                                }
+                                case PBF -> {
+                                    val = VirtualMachineMemory.REGISTER_PBF;
+                                }
+                                default -> {
+                                    return Instruction_Warning;
+                                }
+                            }
+                        }  else if (next_key == _tokenValues.Variable && VirtualMachineMemory.Variables.containsKey(next_value)) {
+                            String variable_name = String.valueOf(next_value);
+                            val = VirtualMachineMemory.Variables.get(variable_name);
+                        } else {
                             return Instruction_Error;
-                        }
-                        Registers move_reg = Registers.valueOf(String.valueOf(next_value));
-                        Object val = null;
-                        switch (move_reg) { // get source
-                            case RMA -> {
-                                val = VirtualMachineMemory.REGISTER_RMA;
-                            }
-                            case RMB -> {
-                                val =VirtualMachineMemory.REGISTER_RMB;
-                            }
-                            case RMC -> {
-                                val = VirtualMachineMemory.REGISTER_RMC;
-                            }
-                            case RMD -> {
-                                val = VirtualMachineMemory.REGISTER_RMD;
-                            }
-                            case PBA -> {
-                                val = VirtualMachineMemory.REGISTER_PBA;
-                            }
-                            case PBB -> {
-                                val = VirtualMachineMemory.REGISTER_PBB;
-                            }
-                            case PBC -> {
-                                val = VirtualMachineMemory.REGISTER_PBC;
-                            }
-                            case PBD -> {
-                                val = VirtualMachineMemory.REGISTER_PBD;
-                            }
-                            case PBE -> {
-                                val = VirtualMachineMemory.REGISTER_PBE;
-                            }
-                            case PBF -> {
-                                val = VirtualMachineMemory.REGISTER_PBF;
-                            }
-                            default -> {
-                                return Instruction_Warning;
-                            }
                         }
                         switch (reg) {  // write
                             case RMA -> {
@@ -252,7 +258,7 @@ public class RomExecutor {
                                 return Instruction_Warning;
                             }
                         }
-                    } // move Address into Address
+                    } // move Address or Variable into Address
                     case MVV -> {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
