@@ -36,6 +36,9 @@ public class RomExecutor {
         ExecuteResults r;
 
         for (HashMap<_tokenValues, Object> line : CompiledMap) {
+            if (line.isEmpty()) {
+                continue;
+            }
             r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line);
             switch (r) {
                 case Instruction_Perfect -> {
