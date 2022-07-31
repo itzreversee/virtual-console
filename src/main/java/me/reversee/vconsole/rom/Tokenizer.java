@@ -33,6 +33,10 @@ public class Tokenizer {
             }
             TokenBuffer = nextToken;
 
+            if (TokenBuffer.startsWith(";")) {
+                break;
+            }
+
             if (TokenBuffer.startsWith("\"")) {
                 // get quoted string
                 TokenBuffer = StringTool.getQuote(str);
