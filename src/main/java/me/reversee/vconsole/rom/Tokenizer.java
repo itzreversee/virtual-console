@@ -97,7 +97,7 @@ public class Tokenizer {
                             compiledTokenizedString.put(_tokenValues.Variable, output);
                         }
                     }
-                    else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.Variable) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) ) {
+                    else if (isTokenValueValid(output, _tokenValues.ValueString) && !(compileSet.get(i - 2) == _tokenValues.ValueDebugString) && !(compileSet.get(i - 2) == _tokenValues.Variable) && !(compileSet.get(i - 2) == _tokenValues.HexadecimalAddress) && !(compileSet.get(i - 2) == _tokenValues.ValueInteger) ) {
                         String fo = output.toString();
                         if (fo.startsWith("\"")) { // format string
                             fo = StringTool.removeFirstChar(fo); // remove first quote
@@ -116,7 +116,8 @@ public class Tokenizer {
                         compiledTokenizedString.put(compileSet.get(i - 2), output);
                     }
                 } else {
-                    System.out.println("Compiler error! Instruction needs " + compileSet.get(i));
+                    System.out.println("Compiler error! Instruction needs " + compileSet.get(i - 2));
+                    System.exit(1);
                 }
             }
         }
@@ -140,7 +141,7 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.ValueAny);
             }
             case ADD, INC, DEC -> {
-                compiledTokenizedString.add(_tokenValues.Address);
+                compiledTokenizedString.add(_tokenValues.Variable);
                 compiledTokenizedString.add(_tokenValues.ValueInteger);
             }
             case FLG, DMP -> compiledTokenizedString.add(_tokenValues.ValueDebugString);
@@ -156,22 +157,22 @@ public class Tokenizer {
         else if ( target == _tokenValues.ValueDebugString )  {
             if (value.toString().equalsIgnoreCase("MEMORY")) {
                 return true;
-            } else if (value.toString().equalsIgnoreCase("DBG") || (value.toString().equalsIgnoreCase("NO-DBG")) ){
-                return true;
-            }
-            return false;
+            } else return value.toString().equalsIgnoreCase("DBG") || (value.toString().equalsIgnoreCase("NO-DBG"));
         }
         else if (value instanceof String    && target == _tokenValues.VariableOrAddress)  { return true; }
         else if (value instanceof String    && target == _tokenValues.Variable)      { return true; }
         else if (value instanceof String    && target == _tokenValues.ValueString)  { return true; }
-        else if (value instanceof Integer   && target == _tokenValues.ValueInteger) { return true; }
+        else if (target == _tokenValues.ValueInteger) {
+            try {
+                int x = Integer.parseInt(String.valueOf(value));
+                return true;
+            } catch (Exception ignored) {
+                return false;
+            }
+        }
         else if (value instanceof Boolean   && target == _tokenValues.ValueBoolean) { return true; }
         else if (value instanceof List      && target == _tokenValues.ValueList)    { return true; }
-        else if (Character.isDigit(String.valueOf(value).charAt(0)) && String.valueOf(value).charAt(1) == 'x' && String.valueOf(value).length() == 4 && target == _tokenValues.HexadecimalAddress) {
-            return true;
-        } else {
-            return false;
-        }
+        else return String.valueOf(value).length() == 4 && Character.isDigit(String.valueOf(value).charAt(0)) && String.valueOf(value).charAt(1) == 'x' && target == _tokenValues.HexadecimalAddress;
 
     }
 

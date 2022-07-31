@@ -317,10 +317,12 @@ public class RomExecutor {
                         next = it.next();       // move iterator by 1
                         next_key = next.getKey();    // get key
                         next_value = next.getValue();  // get value
-                        if (!(next_key == _tokenValues.Address)) {
+                        if (!(next_key == _tokenValues.Variable) && VirtualMachineMemory.Variables.containsKey(next_value)) {
                             return Instruction_Error;
                         }
-                        Registers reg = Registers.valueOf(String.valueOf(next.getValue()));
+                        String variable_name = String.valueOf(next_value);
+                        int variable_content = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(variable_name)));
+
                         next = it.next();       // move iterator by 1
                         next_key = next.getKey();    // get key
                         next_value = next.getValue();  // get value
@@ -328,76 +330,28 @@ public class RomExecutor {
                             return Instruction_Error;
                         }
                         // add
-                        switch (reg) {
-                            case PBA -> {
-                                VirtualMachineMemory.REGISTER_PBA = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBA;
-                                return Instruction_Perfect;
-                            }
-                            case PBB -> {
-                                VirtualMachineMemory.REGISTER_PBB = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBB;
-                                return Instruction_Perfect;
-                            }
-                            case PBC -> {
-                                VirtualMachineMemory.REGISTER_PBC = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBC;
-                                return Instruction_Perfect;
-                            }
-                            case PBD -> {
-                                VirtualMachineMemory.REGISTER_PBD = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBD;
-                                return Instruction_Perfect;
-                            }
-                            case PBE -> {
-                                VirtualMachineMemory.REGISTER_PBE = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBE;
-                                return Instruction_Perfect;
-                            }
-                            case PBF -> {
-                                VirtualMachineMemory.REGISTER_PBF = (Integer) next_value + (Integer) VirtualMachineMemory.REGISTER_PBF;
-                                return Instruction_Perfect;
-                            }
-                        }
-                        return Instruction_Warning;
+                        VirtualMachineMemory.Variables.put(variable_name, variable_content + Integer.parseInt(String.valueOf(next_value)));
+                        return Instruction_Perfect;
                     }
                     case DEC -> {
                         next = it.next();       // move iterator by 1
                         next_key = next.getKey();    // get key
                         next_value = next.getValue();  // get value
-                        if (!(next_key == _tokenValues.Address)) {
+                        if (!(next_key == _tokenValues.Variable) && VirtualMachineMemory.Variables.containsKey(next_value)) {
                             return Instruction_Error;
                         }
-                        Registers reg = Registers.valueOf(String.valueOf(next.getValue()));
+                        String variable_name = String.valueOf(next_value);
+                        int variable_content = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(variable_name)));
+
                         next = it.next();       // move iterator by 1
                         next_key = next.getKey();    // get key
                         next_value = next.getValue();  // get value
                         if (!(next_key == _tokenValues.ValueInteger)) {
                             return Instruction_Error;
                         }
-                        // add
-                        switch (reg) {
-                            case PBA -> {
-                                VirtualMachineMemory.REGISTER_PBA = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBA;
-                                return Instruction_Perfect;
-                            }
-                            case PBB -> {
-                                VirtualMachineMemory.REGISTER_PBB = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBB;
-                                return Instruction_Perfect;
-                            }
-                            case PBC -> {
-                                VirtualMachineMemory.REGISTER_PBC = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBC;
-                                return Instruction_Perfect;
-                            }
-                            case PBD -> {
-                                VirtualMachineMemory.REGISTER_PBD = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBD;
-                                return Instruction_Perfect;
-                            }
-                            case PBE -> {
-                                VirtualMachineMemory.REGISTER_PBE = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBE;
-                                return Instruction_Perfect;
-                            }
-                            case PBF -> {
-                                VirtualMachineMemory.REGISTER_PBF = (Integer) next_value - (Integer) VirtualMachineMemory.REGISTER_PBF;
-                                return Instruction_Perfect;
-                            }
-                        }
-                        return Instruction_Warning;
+                        // decrement
+                        VirtualMachineMemory.Variables.put(variable_name, variable_content - Integer.parseInt(String.valueOf(next_value)));
+                        return Instruction_Perfect;
                     }
                     case VAR -> {
                         next = it.next();       // move iterator by 1
