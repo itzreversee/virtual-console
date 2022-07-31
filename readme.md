@@ -12,7 +12,7 @@ Here is the list of available parameters:
  * ```--compile-rom-source``` compiles rom source to ```.rtsc``` file (RomTokenizedSourceCode) and ```.rom_cmap```(Rom_CompiledMap) which contains readable to vc Map of Instructions and Parameters like Registers or Values.  
  * ```--source-output``` specifies output ```.rom_cmap``` output location
  * ```--skip-rtsc``` skips writing ```.rtsc``` file 
- * ```--rom``` launches rom inside vc 
+ * ```--rom``` launches rom inside vc **(Currently can only run ```.rom_cmap``` files!)**
  * ```--clear-cache``` clears cache **(not implemented yet)**
  * ```--clear-logs``` clears logs **(not implemented yet)**
 
@@ -32,13 +32,16 @@ Or if you have IntelliJ idea installed:
 * Click **virtual-console:jar** > **Build**
 
 When it finishes, you can run it from ```target/``` (Maven) or ```out/artifacts/``` (IntelliJ) folder:  
-```java -jar virtual-console.jar --rom <file.rom_cmap>```
+```bash
+java -jar target/virtual-console.jar --compile-rom-source examples/01-hello.rsc # compile
+java -jar target/virtual-console.jar --rom examples/01-hello.rom_cmap # run
+```
 
 ### Writing code
 Check wiki **(not written yet)**
 
 ### To-Do
- * [ ] Variables
+ * [x] Variables
  * [ ] Functions (like sections in assembly)
  * [ ] Input (raw)
  * [ ] Input (key listener)
