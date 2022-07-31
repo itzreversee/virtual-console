@@ -6,7 +6,11 @@
 
     <groupId>me.reversee</groupId>
     <artifactId>virtual-console</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>release</version>
+
+    <build>
+        <finalName>virtual-console</finalName>
+    </build>
 
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
