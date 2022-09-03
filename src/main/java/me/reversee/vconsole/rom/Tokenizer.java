@@ -79,6 +79,15 @@ public class Tokenizer {
                 compileSet = getInstructionCompileSet(ci);
             } else if (i > 1) {
                 Logger.log("Check parameters for : " + output.toString() + ", should be : " + _tokenValues.valueOf(String.valueOf(compileSet.get(i - 2))), Logger.logfile, true );
+                if (output.toString().toLowerCase().equals("mov")) {
+                    if (i == 2) {
+                        if (isTokenValueValid(output, _tokenValues.ValueInteger)) {
+                            compiledTokenizedString.put(_tokenValues.ValueInteger, Integer.valueOf(String.valueOf(output)));
+                        } else {
+                            compiledTokenizedString.put(_tokenValues.VariableOrAddress, Integer.valueOf(String.valueOf(output)));
+                        }
+                    }
+                }
                 try {
                     Registers.valueOf((output.toString().toUpperCase()));
                     Logger.log("Valid!", Logger.logfile, true);
@@ -129,7 +138,7 @@ public class Tokenizer {
 
         switch (instruction) {
             case MOV -> {
-                compiledTokenizedString.add(_tokenValues.ValueAny);
+                compiledTokenizedString.add(_tokenValues.VariableOrAddress);
                 compiledTokenizedString.add(_tokenValues.ValueAny);
             }
             case MVA -> {
@@ -145,14 +154,14 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.ValueInteger);
             }
             case LEN -> {
-                compiledTokenizedString.add(_tokenValues.Variable);
+                compiledTokenizedString.add(_tokenValues.VariableTarget);
                 compiledTokenizedString.add(_tokenValues.Variable);
             }
             case FLG, DMP -> compiledTokenizedString.add(_tokenValues.ValueDebugString);
             case VAR -> compiledTokenizedString.add(_tokenValues.ValueString);
             case INT -> {
                 compiledTokenizedString.add(_tokenValues.HexadecimalAddress);
-                compiledTokenizedString.add(_tokenValues.ValueInteger);
+                compiledTokenizedString.add(_tokenValues.ValueAny);
             }
         }
 
@@ -168,6 +177,7 @@ public class Tokenizer {
         }
         else if (value instanceof String    && target == _tokenValues.VariableOrAddress)  { return true; }
         else if (value instanceof String    && target == _tokenValues.Variable)      { return true; }
+        else if (value instanceof String    && target == _tokenValues.VariableTarget)      { return true; }
         else if (value instanceof String    && target == _tokenValues.ValueString)  { return true; }
         else if (target == _tokenValues.ValueInteger) {
             try {

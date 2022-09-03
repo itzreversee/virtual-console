@@ -109,6 +109,7 @@ public class RomExecutor {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
+                        //System.exit(0);
                         int addr = 0;
                         if (next_value.toString().startsWith("$")) {
                             String tmp = next_value.toString();
@@ -226,14 +227,14 @@ public class RomExecutor {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
-                        String variable_name = String.valueOf(next_value);
-                        int length = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(variable_name)));
+                        String var1 = String.valueOf(next_value);
 
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
-                        variable_name = String.valueOf(next_value);
-                        VirtualMachineMemory.Variables.put(variable_name, length);
+                        String var2 = String.valueOf(next_value);
+                        int length = Integer.valueOf(String.valueOf(var2).length());
+                        VirtualMachineMemory.Variables.put(var1, length);
                         return Instruction_Perfect;
                     }
                     case INT -> {
@@ -259,6 +260,20 @@ public class RomExecutor {
                             }
                             case INT_0X0B -> {
                                 return Instruction_Warning;
+                            }
+                            case INT_0X1A -> {
+                                Scanner scn = new Scanner(System.in);  // Create a Scanner object
+                                System.out.println(" > ");
+                                String input = scn.next();  // Read user input
+                                next = it.next();
+                                next_value = next.getValue();
+                                String variable_name = String.valueOf(next_value);
+                                // check if it is a variable
+                                if (!VirtualMachineMemory.Variables.containsKey(variable_name)) { // check if variable exists
+                                    return Instruction_Error;
+                                }
+                                VirtualMachineMemory.Variables.put(variable_name, input);
+                                return Instruction_Perfect;
                             }
                         }
                         return Instruction_Warning;
