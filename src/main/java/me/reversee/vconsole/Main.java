@@ -6,13 +6,12 @@ import me.reversee.vconsole.args.ArgumentParser;
 import me.reversee.vconsole.util.Logger;
 import me.reversee.vconsole.util.Workspace;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Main {
 
     public static int _version_major = 0;
-    public static int _version_minor = 5;
+    public static int _version_minor = 6;
     public static String _version_string = _version_major + "." + _version_minor;
 
     public static void main(String[] args) throws NotImplementedException {
