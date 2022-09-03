@@ -1,5 +1,5 @@
 ### virtual console 
-version 0.4
+version 0.5
 
 My virtual console like app, written in java.
 
@@ -42,6 +42,7 @@ Check wiki **(not written yet)**
 
 ### To-Do
  * [x] Variables
+ * [x] Memory management
  * [ ] Functions (like sections in assembly)
  * [ ] Input (raw)
  * [ ] Input (key listener)
