@@ -129,7 +129,7 @@ public class Tokenizer {
 
         switch (instruction) {
             case MOV -> {
-                compiledTokenizedString.add(_tokenValues.ValueInteger);
+                compiledTokenizedString.add(_tokenValues.ValueAny);
                 compiledTokenizedString.add(_tokenValues.ValueAny);
             }
             case MVA -> {
@@ -143,6 +143,10 @@ public class Tokenizer {
             case ADD, INC, DEC -> {
                 compiledTokenizedString.add(_tokenValues.Variable);
                 compiledTokenizedString.add(_tokenValues.ValueInteger);
+            }
+            case LEN -> {
+                compiledTokenizedString.add(_tokenValues.Variable);
+                compiledTokenizedString.add(_tokenValues.Variable);
             }
             case FLG, DMP -> compiledTokenizedString.add(_tokenValues.ValueDebugString);
             case VAR -> compiledTokenizedString.add(_tokenValues.ValueString);

@@ -1,20 +1,22 @@
 package me.reversee.vconsole.box;
 
 public enum Instructions {
-    FLG, // eg. flg 0x0A                    - sets a flag
+    FLG, // eg. flg dbg                    - sets a flag
 
-    MOV, // eg. mov PBA, "Hello, World!"    - moves value into register
-    MVA, // eg. mov PBA, PBB                - moves register or variable into register
-    MVV, // eg. mov PBA, hello              - moves variable into register
-    ADD, // eg. add VAA, 10                 - adds value to register
-    INC, // eg. INC VAA, 2                  - increments register by value
-    DEC, // eg. DEC VAA, 2                  - decrements register by value
+    MOV, // eg. mov 1, "Hello, World!"    - moves value into memory
+    MVA, // eg. mov 1, PBB                - moves variable into memory
+    MVV, // eg. mov 1, hello              - moves variable into memory
+    ADD, // eg. add A, 10                 - adds value to variable
+    INC, // eg. inc A, 2                  - increments variable by value
+    DEC, // eg. dec A, 2                  - decrements variable by value
 
-    VAR, // eg. VAR hello                   - adds a variable hello
+    LEN, // eg. len A, B                  - sets A's content to be B's length
 
-    INT, // eg. INT 0xA0                    - calls an interrupt
+    VAR, // eg. var hello                 - adds a variable hello
 
-    HLT, // eg. HLT                         - halt thread
+    INT, // eg. int 0x0A 1                - calls an interrupt
 
-    DMP, // eg. DMP variable/register       - dumps variable or register
+    HLT, // eg. hlt                       - halt thread
+
+    DMP, // eg. dmp Memory                - dumps things
 }

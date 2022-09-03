@@ -4,6 +4,7 @@ import me.reversee.vconsole.box.*;
 import me.reversee.vconsole.cpu.MemoryManager;
 import me.reversee.vconsole.exceptions.NotImplementedException;
 import me.reversee.vconsole.util.Logger;
+import me.reversee.vconsole.util.StringTool;
 
 import java.io.*;
 import java.util.*;
@@ -108,10 +109,17 @@ public class RomExecutor {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
-                        if (!(next_key == _tokenValues.ValueInteger)) {
-                            return Instruction_Error;
+                        int addr = 0;
+                        if (next_value.toString().startsWith("$")) {
+                            String tmp = next_value.toString();
+                            tmp = StringTool.removeFirstChar(tmp);
+                            if (!(VirtualMachineMemory.Variables.containsKey(tmp))) {
+                                return Instruction_Error;
+                            }
+                            addr = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(tmp)));
+                        } else {
+                            addr = Integer.parseInt((String) next_value);
                         }
-                        int addr = Integer.parseInt((String) next_value);
                         next = it.next();       // move iterator by 1
                         next_value  = next.getValue();  // get value
                         Object val = next_value;
@@ -212,6 +220,20 @@ public class RomExecutor {
                         }
                         String variable_name = String.valueOf(next_value);
                         VirtualMachineMemory.Variables.put(variable_name, null);
+                        return Instruction_Perfect;
+                    }
+                    case LEN -> {
+                        next = it.next();       // move iterator by 1
+                        next_key    = next.getKey();    // get key
+                        next_value  = next.getValue();  // get value
+                        String variable_name = String.valueOf(next_value);
+                        int length = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(variable_name)));
+
+                        next = it.next();       // move iterator by 1
+                        next_key    = next.getKey();    // get key
+                        next_value  = next.getValue();  // get value
+                        variable_name = String.valueOf(next_value);
+                        VirtualMachineMemory.Variables.put(variable_name, length);
                         return Instruction_Perfect;
                     }
                     case INT -> {
