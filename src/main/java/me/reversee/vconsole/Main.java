@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 public class Main {
 
     public static int _version_major = 0;
-    public static int _version_minor = 4;
+    public static int _version_minor = 5;
     public static String _version_string = _version_major + "." + _version_minor;
 
     public static void main(String[] args) throws NotImplementedException {
