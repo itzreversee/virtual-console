@@ -1,6 +1,7 @@
 package me.reversee.vconsole.rom;
 
 import me.reversee.vconsole.box.*;
+import me.reversee.vconsole.cpu.MemoryManager;
 import me.reversee.vconsole.exceptions.NotImplementedException;
 import me.reversee.vconsole.util.Logger;
 
@@ -34,12 +35,13 @@ public class RomExecutor {
     public static boolean parseCMapInstructions(ArrayList<HashMap<_tokenValues, Object>> CompiledMap)  {
 
         ExecuteResults r;
+        MemoryManager memory = new MemoryManager(64);
 
         for (HashMap<_tokenValues, Object> line : CompiledMap) {
             if (line.isEmpty()) {
                 continue;
             }
-            r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line);
+            r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line, (MemoryManager) memory);
             switch (r) {
                 case Instruction_Perfect -> {
                     Logger.lldo("Instruction " + line + " executed perfectly.");
@@ -73,7 +75,7 @@ public class RomExecutor {
         return true;
     }
 
-    public static ExecuteResults executeInstruction(LinkedHashMap<_tokenValues, Object> instruction) {
+    public static ExecuteResults executeInstruction(LinkedHashMap<_tokenValues, Object> instruction, MemoryManager memory) {
 
         Instructions currentInstructions;
 
@@ -106,162 +108,45 @@ public class RomExecutor {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
-                        if (!(next_key == _tokenValues.Address)) {
+                        if (!(next_key == _tokenValues.ValueInteger)) {
                             return Instruction_Error;
                         }
-                        Registers reg = Registers.valueOf(String.valueOf(next_value));
+                        int addr = Integer.parseInt((String) next_value);
                         next = it.next();       // move iterator by 1
                         next_value  = next.getValue();  // get value
                         Object val = next_value;
-                        switch (reg) {
-                            case RMA -> {
-                                VirtualMachineMemory.REGISTER_RMA = val;
-                                return Instruction_Perfect;
-                            }
-                            case RMB -> {
-                                VirtualMachineMemory.REGISTER_RMB = val;
-                                return Instruction_Perfect;
-                            }
-                            case RMC -> {
-                                VirtualMachineMemory.REGISTER_RMC = val;
-                                return Instruction_Perfect;
-                            }
-                            case RMD -> {
-                                VirtualMachineMemory.REGISTER_RMD = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBA -> {
-                                VirtualMachineMemory.REGISTER_PBA = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBB -> {
-                                VirtualMachineMemory.REGISTER_PBB = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBC -> {
-                                VirtualMachineMemory.REGISTER_PBC = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBD -> {
-                                VirtualMachineMemory.REGISTER_PBD = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBE -> {
-                                VirtualMachineMemory.REGISTER_PBE = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBF -> {
-                                VirtualMachineMemory.REGISTER_PBF = val;
-                                return Instruction_Perfect;
-                            }
-                            default -> {
-                                return Instruction_Warning;
-                            }
-                        }
+
+                        // write to memory
+                        memory.writeByteArray(addr, val.toString().getBytes());
+                        return Instruction_Perfect;
                     }  // move ValueAny into Address
                     case MVA -> {
                         Object val = null;
+                        int write_addr;
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
-                        Registers reg;
-                        if (next_key == _tokenValues.Address) {
-                            reg = Registers.valueOf(String.valueOf(next_value));
+                        if (next_key == _tokenValues.ValueInteger) {
+                            write_addr = Integer.parseInt(String.valueOf(next_value));
                         } else {
                             return Instruction_Error;
                         }
                         next = it.next();       // move iterator by 1
                         next_key  = next.getKey();  // get value
                         next_value  = next.getValue();  // get value
-                        if (next_key == _tokenValues.AddressB) {
-                            Registers move_reg = Registers.valueOf(String.valueOf(next_value));
-                            switch (move_reg) { // get source
-                                case RMA -> {
-                                    val = VirtualMachineMemory.REGISTER_RMA;
-                                }
-                                case RMB -> {
-                                    val =VirtualMachineMemory.REGISTER_RMB;
-                                }
-                                case RMC -> {
-                                    val = VirtualMachineMemory.REGISTER_RMC;
-                                }
-                                case RMD -> {
-                                    val = VirtualMachineMemory.REGISTER_RMD;
-                                }
-                                case PBA -> {
-                                    val = VirtualMachineMemory.REGISTER_PBA;
-                                }
-                                case PBB -> {
-                                    val = VirtualMachineMemory.REGISTER_PBB;
-                                }
-                                case PBC -> {
-                                    val = VirtualMachineMemory.REGISTER_PBC;
-                                }
-                                case PBD -> {
-                                    val = VirtualMachineMemory.REGISTER_PBD;
-                                }
-                                case PBE -> {
-                                    val = VirtualMachineMemory.REGISTER_PBE;
-                                }
-                                case PBF -> {
-                                    val = VirtualMachineMemory.REGISTER_PBF;
-                                }
-                                default -> {
-                                    return Instruction_Warning;
-                                }
-                            }
-                        }  else if (next_key == _tokenValues.Variable && VirtualMachineMemory.Variables.containsKey(next_value)) {
+
+                        if (next_key == _tokenValues.Variable && VirtualMachineMemory.Variables.containsKey(next_value)) {
                             String variable_name = String.valueOf(next_value);
                             val = VirtualMachineMemory.Variables.get(variable_name);
                         } else {
                             return Instruction_Error;
                         }
-                        switch (reg) {  // write
-                            case RMA -> {
-                                VirtualMachineMemory.REGISTER_RMA = val;
-                                return Instruction_Perfect;
-                            }
-                            case RMB -> {
-                                VirtualMachineMemory.REGISTER_RMB = val;
-                                return Instruction_Perfect;
-                            }
-                            case RMC -> {
-                                VirtualMachineMemory.REGISTER_RMC = val;
-                                return Instruction_Perfect;
-                            }
-                            case RMD -> {
-                                VirtualMachineMemory.REGISTER_RMD = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBA -> {
-                                VirtualMachineMemory.REGISTER_PBA = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBB -> {
-                                VirtualMachineMemory.REGISTER_PBB = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBC -> {
-                                VirtualMachineMemory.REGISTER_PBC = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBD -> {
-                                VirtualMachineMemory.REGISTER_PBD = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBE -> {
-                                VirtualMachineMemory.REGISTER_PBE = val;
-                                return Instruction_Perfect;
-                            }
-                            case PBF -> {
-                                VirtualMachineMemory.REGISTER_PBF = val;
-                                return Instruction_Perfect;
-                            }
-                            default -> {
-                                return Instruction_Warning;
-                            }
-                        }
-                    } // move Address or Variable into Address
+
+                        // write to memory
+                        memory.writeByteArray(write_addr, val.toString().getBytes());
+                        return Instruction_Perfect;
+
+                    } // move Variable into Address
                     case MVV -> {
                         next = it.next();       // move iterator by 1
                         next_key    = next.getKey();    // get key
@@ -275,44 +160,9 @@ public class RomExecutor {
                         next_value  = next.getValue();  // get value
                         Object variable_value;
                         variable_value = next_value; // get value
-                        try {
-                            Registers reg = Registers.valueOf(String.valueOf(next_value));
-                            switch (reg) {  // write
-                                case RMA -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_RMA;
-                                }
-                                case RMB -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_RMB;
-                                }
-                                case RMC -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_RMC;
-                                }
-                                case RMD -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_RMD;
-                                }
-                                case PBA -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_PBA;
-                                }
-                                case PBB -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_PBB;
-                                }
-                                case PBC -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_PBC;
-                                }
-                                case PBD -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_PBD;
-                                }
-                                case PBE -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_PBE;
-                                }
-                                case PBF -> {
-                                    variable_value = VirtualMachineMemory.REGISTER_PBF;
-                                }
-                            }
-                        } catch (Exception ignored) {}
                         VirtualMachineMemory.Variables.put(variable_name, variable_value);
                         return Instruction_Perfect;
-                    } // move ValueAny or Register into Variable
+                    } // move ValueAny into Variable
                     case ADD, INC -> {
                         next = it.next();       // move iterator by 1
                         next_key = next.getKey();    // get key
@@ -372,32 +222,21 @@ public class RomExecutor {
                             return Instruction_Error;
                         }
                         Interrupts r = Interrupts.valueOf(String.valueOf(next.getValue()));
-                        // add
                         switch (r) {
                             case INT_0X0A -> {
-                                LinkedList<Object> l = new LinkedList<>();
-                                l.add(VirtualMachineMemory.REGISTER_PBA);
-                                l.add(VirtualMachineMemory.REGISTER_PBB);
-                                l.add(VirtualMachineMemory.REGISTER_PBC);
-                                l.add(VirtualMachineMemory.REGISTER_PBD);
-                                l.add(VirtualMachineMemory.REGISTER_PBE);
-                                l.add(VirtualMachineMemory.REGISTER_PBF);
-
-                                for (Object o : l) {
-                                    if (o == null)
-                                        continue;
-                                    System.out.print(o.toString());
+                                StringBuilder sb = new StringBuilder();
+                                next = it.next();
+                                byte[] ba = memory.readByteArray(Integer.parseInt((String) next.getValue()));
+                                for (byte b : ba) {
+                                    if (b == -3)
+                                        break;
+                                    sb.append((char) b);
                                 }
+                                System.out.print(sb.toString());
                                 return Instruction_Perfect;
                             }
                             case INT_0X0B -> {
-                                VirtualMachineMemory.REGISTER_PBA = null;
-                                VirtualMachineMemory.REGISTER_PBB = null;
-                                VirtualMachineMemory.REGISTER_PBC = null;
-                                VirtualMachineMemory.REGISTER_PBD = null;
-                                VirtualMachineMemory.REGISTER_PBE = null;
-                                VirtualMachineMemory.REGISTER_PBF = null;
-                                return Instruction_Perfect;
+                                return Instruction_Warning;
                             }
                         }
                         return Instruction_Warning;
@@ -415,16 +254,7 @@ public class RomExecutor {
                         String d = next_value.toString();
                         if (Objects.equals(d, "Memory")) {
                             Logger.lldo("Memory Dump:");
-                            Logger.lldo(" REGISTER_RMA: " + VirtualMachineMemory.REGISTER_RMA);
-                            Logger.lldo(" REGISTER_RMB: " + VirtualMachineMemory.REGISTER_RMB);
-                            Logger.lldo(" REGISTER_RMC: " + VirtualMachineMemory.REGISTER_RMC);
-                            Logger.lldo(" REGISTER_RMD: " + VirtualMachineMemory.REGISTER_RMD);
-                            Logger.lldo(" REGISTER_PBA: " + VirtualMachineMemory.REGISTER_PBA);
-                            Logger.lldo(" REGISTER_PBB: " + VirtualMachineMemory.REGISTER_PBB);
-                            Logger.lldo(" REGISTER_PBC: " + VirtualMachineMemory.REGISTER_PBC);
-                            Logger.lldo(" REGISTER_PBD: " + VirtualMachineMemory.REGISTER_PBD);
-                            Logger.lldo(" REGISTER_PBE: " + VirtualMachineMemory.REGISTER_PBE);
-                            Logger.lldo(" REGISTER_PBF: " + VirtualMachineMemory.REGISTER_PBF);
+                            Logger.lldo(" Memory Table: " + Arrays.toString(memory.dump()));
                             Logger.lldo(" Variable Table: " + VirtualMachineMemory.Variables);
                             Logger.lldo("End dump");
                             return Instruction_Perfect;

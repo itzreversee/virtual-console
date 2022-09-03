@@ -5,8 +5,8 @@ var MyVariable                          ; create variable "MyVariable"
 mvv MyVariable, "Hello, World!\n"
 
 ; move MyVariable into PBA
-mva PBA, MyVariable
+mva 1, MyVariable
 
-int 0x0A                                ; spit out print buffer
+int 0x0A 1                              ; spit out print buffer
 dmp Memory                              ; dump memory
 hlt                                     ; halt

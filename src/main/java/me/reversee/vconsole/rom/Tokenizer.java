@@ -129,12 +129,12 @@ public class Tokenizer {
 
         switch (instruction) {
             case MOV -> {
-                compiledTokenizedString.add(_tokenValues.Address);
+                compiledTokenizedString.add(_tokenValues.ValueInteger);
                 compiledTokenizedString.add(_tokenValues.ValueAny);
             }
             case MVA -> {
-                compiledTokenizedString.add(_tokenValues.Address);
-                compiledTokenizedString.add(_tokenValues.VariableOrAddress);
+                compiledTokenizedString.add(_tokenValues.ValueInteger);
+                compiledTokenizedString.add(_tokenValues.Variable);
             }
             case MVV -> {
                 compiledTokenizedString.add(_tokenValues.Variable);
@@ -146,7 +146,10 @@ public class Tokenizer {
             }
             case FLG, DMP -> compiledTokenizedString.add(_tokenValues.ValueDebugString);
             case VAR -> compiledTokenizedString.add(_tokenValues.ValueString);
-            case INT -> compiledTokenizedString.add(_tokenValues.HexadecimalAddress);
+            case INT -> {
+                compiledTokenizedString.add(_tokenValues.HexadecimalAddress);
+                compiledTokenizedString.add(_tokenValues.ValueInteger);
+            }
         }
 
         return compiledTokenizedString;
