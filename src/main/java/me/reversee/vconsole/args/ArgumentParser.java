@@ -1,7 +1,6 @@
 package me.reversee.vconsole.args;
 
 import java.util.LinkedHashMap;
-
 public class ArgumentParser {
     public static LinkedHashMap<String, Object> getArgumentHashMap(String[] args) {
 

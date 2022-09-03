@@ -1,6 +1,5 @@
 package me.reversee.vconsole.rom;
 
-import me.reversee.vconsole.DoNothing;
 import me.reversee.vconsole.box.Instructions;
 import me.reversee.vconsole.box.Registers;
 import me.reversee.vconsole.box._tokenValues;

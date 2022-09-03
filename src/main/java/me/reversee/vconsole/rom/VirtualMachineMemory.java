@@ -1,6 +1,5 @@
 package me.reversee.vconsole.rom;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class VirtualMachineMemory {
