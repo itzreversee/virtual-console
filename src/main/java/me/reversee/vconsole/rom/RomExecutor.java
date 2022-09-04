@@ -36,32 +36,51 @@ public class RomExecutor {
     public static boolean parseCMapInstructions(ArrayList<HashMap<_tokenValues, Object>> CompiledMap)  {
 
         ExecuteResults r;
-        MemoryManager memory = new MemoryManager(64);
-        MemoryManager qm = new MemoryManager(4);
+        MemoryManager memory = new MemoryManager(64); // Main Memory
+        MemoryManager lm = new MemoryManager(4); // LoopMemory used for loops
+        MemoryManager cm = new MemoryManager(1); // CompareMemory used for cmp/if/else etc.
         ArrayList<LinkedHashMap<_tokenValues, Object>> loopMap = new ArrayList<LinkedHashMap<_tokenValues, Object>>();
+
         int loop_count = 0;
         boolean loop_enabled = false;
         boolean loop_prep = false;
+
+        boolean cmp_result = false;
+        boolean in_do_block = false;
+        boolean do_is_equal = false;
 
         for (HashMap<_tokenValues, Object> line : CompiledMap) {
             if (loop_count == 0) {
                 loop_enabled = false;
             }
-            //System.out.println("enabled:    " + String.valueOf(loop_enabled));
-            //System.out.println("loop count: " + String.valueOf(loop_count));
             if (loop_enabled && loop_prep) {
                 if (line.isEmpty()) continue;
                 loopMap.add((LinkedHashMap<_tokenValues, Object>) line);
             } else if (loop_enabled && !loop_prep) {
                 for (LinkedHashMap<_tokenValues, Object> lline : loopMap) {
                     if (line.isEmpty()) continue;
+                    if (in_do_block) {
+                        if (do_is_equal && !cmp_result) continue;
+                        if (!do_is_equal && cmp_result) continue;
+                    }
                     if (loop_count == 0) {
                         loop_enabled = false;
                         break;
                     }
-                    r = executeInstruction(lline, (MemoryManager) memory, (MemoryManager) qm);
+                    r = executeInstruction(lline, memory, lm, cm);
                     loop_count--;
                     switch (r) {
+                        case DEQ_Start -> {
+                            in_do_block = true;
+                            do_is_equal = true;
+                        }
+                        case DNQ_Start -> {
+                            in_do_block = true;
+                            do_is_equal = false;
+                        }
+                        case DO_End -> {
+                            in_do_block = false;
+                        }
                         case Loop_Break -> {
                             loop_enabled = false;
                             loop_prep = false;
@@ -98,10 +117,26 @@ public class RomExecutor {
                 continue;
             }
                 if (line.isEmpty()) continue;
-                r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line, (MemoryManager) memory, (MemoryManager) qm);
+                if(seekForEndDo(line) == DO_End && in_do_block)  {
+                    in_do_block = false;
+                }
+                if (in_do_block) {
+                    if (do_is_equal && !cmp_result) continue;
+                    if (!do_is_equal && cmp_result) continue;
+                }
+                r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line, memory, lm, cm);
+                cmp_result = Boolean.parseBoolean(String.valueOf(cm.readByte(0)!=0));
                 switch (r) {
+                    case DEQ_Start -> {
+                        in_do_block = true;
+                        do_is_equal = true;
+                    }
+                    case DNQ_Start -> {
+                        in_do_block = true;
+                        do_is_equal = false;
+                    }
                     case Loop_Start -> {
-                        String ls = new String(qm.readByteArray(0));
+                        String ls = new String(lm.readByteArray(0));
                         loop_count = Integer.valueOf(ls.trim());
                         loop_enabled = true;
                         loop_prep = true;
@@ -141,7 +176,21 @@ public class RomExecutor {
         return true;
     }
 
-    public static ExecuteResults executeInstruction(LinkedHashMap<_tokenValues, Object> instruction, MemoryManager memory, MemoryManager qm) {
+    private static ExecuteResults seekForEndDo(HashMap<_tokenValues, Object> line) {
+        Instructions currentInstructions;
+
+        Iterator<Map.Entry<_tokenValues, Object>> it = line.entrySet().iterator();
+
+        Map.Entry<_tokenValues, Object> next = it.next();
+
+        Object value = next.getValue();
+
+        if (Instructions.valueOf(String.valueOf(value)) == Instructions.ENDDO) return DO_End;
+
+        return Instruction_Perfect;
+    }
+
+    public static ExecuteResults executeInstruction(LinkedHashMap<_tokenValues, Object> instruction, MemoryManager memory, MemoryManager lm, MemoryManager cm) {
 
         Instructions currentInstructions;
 
@@ -376,12 +425,51 @@ public class RomExecutor {
                             return Instruction_Error;
                         }
                         int loop_times = Integer.parseInt(String.valueOf(next_value)); // how many loops to do
-                        qm.writeByteArray(0, String.valueOf(loop_times).getBytes());
+                        lm.writeByteArray(0, String.valueOf(loop_times).getBytes());
                         return Loop_Start;
                     }
                     case ENDLOOP -> {
-                        qm.clear();
+                        lm.clear();
                         return Loop_End;
+                    }
+                    case BREAKLOOP -> {
+                        return Loop_Break;
+                    }
+                    case CMP -> {
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.VariableTarget) && VirtualMachineMemory.Variables.containsKey(next_value)) {
+                            return Instruction_Error;
+                        }
+                        String var1 = String.valueOf(next_value);
+                        Object var1c = VirtualMachineMemory.Variables.get(var1);
+
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.Variable) && VirtualMachineMemory.Variables.containsKey(next_value)) {
+                            return Instruction_Error;
+                        }
+                        // add
+                        String var2 = String.valueOf(next_value);
+                        Object var2c = VirtualMachineMemory.Variables.get(var2);
+                        boolean iseq = Objects.equals(var1c, var2c);
+                        if (iseq) {
+                            cm.writeByte(0, (byte) 1);
+                        } else {
+                            cm.writeByte(0, (byte) 0);
+                        }
+                        return Instruction_Perfect;
+                    }
+                    case DEQ -> {
+                        return DEQ_Start;
+                    }
+                    case DNQ -> {
+                        return DNQ_Start;
+                    }
+                    case ENDDO -> {
+                        return DO_End;
                     }
                     case INT -> {
                         next = it.next();       // move iterator by 1
@@ -442,6 +530,7 @@ public class RomExecutor {
                         if (Objects.equals(d, "Memory")) {
                             Logger.lldo("Memory Dump:");
                             Logger.lldo(" Memory Table: " + Arrays.toString(memory.dump()));
+                            Logger.lldo(" Compare Result: " + Arrays.toString(cm.dump()));
                             Logger.lldo(" Variable Table: " + VirtualMachineMemory.Variables);
                             Logger.lldo("End dump");
                             return Instruction_Perfect;

@@ -78,8 +78,7 @@ public class Tokenizer {
                 compileSet = getInstructionCompileSet(ci);
             } else if (i > 1) {
                 Logger.log("Check parameters for : " + output.toString() + ", should be : " + _tokenValues.valueOf(String.valueOf(compileSet.get(i - 2))), Logger.logfile, true );
-                if (ci == Instructions.MUL || ci == Instructions.DIV || ci == Instructions.ADD) {
-                    System.out.println("HERE!!!\n");
+                if (ci == Instructions.MUL || ci == Instructions.DIV || ci == Instructions.ADD || ci == Instructions.CMP) {
                     if (i == 2) {
                         if (isTokenValueValid(output, _tokenValues.VariableTarget)) {
                             compiledTokenizedString.put(_tokenValues.VariableTarget, String.valueOf(output));
@@ -161,7 +160,7 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.Variable);
                 compiledTokenizedString.add(_tokenValues.ValueInteger);
             }
-            case ADD, LEN, MUL, DIV -> {
+            case ADD, LEN, MUL, DIV, CMP -> {
                 compiledTokenizedString.add(_tokenValues.VariableTarget);
                 compiledTokenizedString.add(_tokenValues.Variable);
             }

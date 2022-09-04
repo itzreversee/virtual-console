@@ -12,9 +12,13 @@ public enum Instructions {
     MUL, // eg. mul A, B                  - multiplies variable by variable
     DIV, // eg. div A, B                  - divides variable by variable
     LEN, // eg. len A, B                  - sets A's content to be B's length
-
+    CMP, // eg. cmp A, B                  - compare 2 variables
+    DEQ,// eg. deq                        - do if cmp equal
+    DNQ, // eg. dnq                       - do if cmp not equal
+    ENDDO,  // eg. enddo                  - end do block
     LOOP,   // eg. loop 5                 - loop x times ( -1 for infinity )
     ENDLOOP,// eg. endloop                - specifies loop ending point
+    BREAKLOOP, // eg. breakloop           - breaks loop
 
     VAR, // eg. var hello                 - adds a variable hello
 

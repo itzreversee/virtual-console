@@ -17,4 +17,8 @@ public enum ExecuteResults {
     Loop_End,
     Loop_Break,
 
+    DEQ_Start,
+    DNQ_Start,
+    DO_End,
+
 }
