@@ -9,9 +9,11 @@ import java.nio.file.StandardOpenOption;
 
 public class MemoryManager implements Memory {
     private byte[] memory; // Virtual Console Memory
+    private int size;
 
     public MemoryManager(int size) {
-        this.memory = new byte[size];
+        this.size = size;
+        this.memory = new byte[this.size];
         for (int i = 0; i < memory.length; i++) {
             this.memory[i] = (byte) 0;
         }
@@ -93,6 +95,11 @@ public class MemoryManager implements Memory {
             System.exit(1);
         }
 
+    }
+
+    // mass operation
+    public void clear() {
+        this.memory = new byte[this.size];
     }
 
 }

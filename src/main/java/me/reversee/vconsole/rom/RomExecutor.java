@@ -342,6 +342,9 @@ public class RomExecutor {
                                 VirtualMachineMemory.Variables.put(variable_name, input);
                                 return Instruction_Perfect;
                             }
+                            case INT_0XFF -> {
+                                memory.clear();
+                            }
                         }
                         return Instruction_Warning;
                     }
