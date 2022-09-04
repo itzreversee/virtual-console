@@ -2,6 +2,9 @@
 var InputData             ; create variable "MyInput"
 var InputLength         ; create variable "InputLength"
 
+; loop 4 times
+loop 4
+
 ; move string to memory and print
 mov 0, "Write something and it will echo!"
 int 0x0A 0
@@ -21,6 +24,9 @@ mov $InputLength, "\n"
 
 ; print it out!
 int 0x0A 0
+
+; end loop
+endloop
 
 flg dbg     ; set debug flag
 dmp Memory  ; dump memory

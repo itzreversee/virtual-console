@@ -13,4 +13,8 @@ public enum ExecuteResults {
 
     Halt,
 
+    Loop_Start,
+    Loop_End,
+    Loop_Break,
+
 }

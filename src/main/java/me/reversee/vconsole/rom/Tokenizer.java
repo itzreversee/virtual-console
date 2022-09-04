@@ -165,6 +165,7 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.VariableTarget);
                 compiledTokenizedString.add(_tokenValues.Variable);
             }
+            case LOOP -> compiledTokenizedString.add(_tokenValues.ValueInteger);
             case FLG, DMP -> compiledTokenizedString.add(_tokenValues.ValueDebugString);
             case VAR -> compiledTokenizedString.add(_tokenValues.ValueString);
             case INT -> {

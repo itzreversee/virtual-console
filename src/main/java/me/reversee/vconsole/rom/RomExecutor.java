@@ -37,46 +37,111 @@ public class RomExecutor {
 
         ExecuteResults r;
         MemoryManager memory = new MemoryManager(64);
+        MemoryManager qm = new MemoryManager(4);
+        ArrayList<LinkedHashMap<_tokenValues, Object>> loopMap = new ArrayList<LinkedHashMap<_tokenValues, Object>>();
+        int loop_count = 0;
+        boolean loop_enabled = false;
+        boolean loop_prep = false;
 
         for (HashMap<_tokenValues, Object> line : CompiledMap) {
-            if (line.isEmpty()) {
+            if (loop_count == 0) {
+                loop_enabled = false;
+            }
+            //System.out.println("enabled:    " + String.valueOf(loop_enabled));
+            //System.out.println("loop count: " + String.valueOf(loop_count));
+            if (loop_enabled && loop_prep) {
+                if (line.isEmpty()) continue;
+                loopMap.add((LinkedHashMap<_tokenValues, Object>) line);
+            } else if (loop_enabled && !loop_prep) {
+                for (LinkedHashMap<_tokenValues, Object> lline : loopMap) {
+                    if (line.isEmpty()) continue;
+                    if (loop_count == 0) {
+                        loop_enabled = false;
+                        break;
+                    }
+                    r = executeInstruction(lline, (MemoryManager) memory, (MemoryManager) qm);
+                    loop_count--;
+                    switch (r) {
+                        case Loop_Break -> {
+                            loop_enabled = false;
+                            loop_prep = false;
+                            loopMap.clear();
+                        }
+                        case Instruction_Perfect -> {
+                            Logger.lldo("Instruction " + line + " executed perfectly.");
+                        }
+                        case Instruction_Warning -> {
+                            Logger.lldo("Instruction " + line + " executed with warnings.");
+                        }
+                        case Instruction_Error -> {
+                            Logger.lldo("Instruction " + line + " did not execute correctly.");
+                            Logger.log("An error occurred, and function had been destroyed.", Logger.logfile, true);
+                            return false;
+                        }
+                        case Instruction_PerformanceFailure -> {
+                            Logger.lldo("Instruction " + line + " executed with worse performance.");
+                        }
+                        case ToggleFlag_Debug -> {
+                            Logger.lldo = true;
+                            Logger.lldo("Toggling debug flag.");
+                        }
+                        case ToggleFlag_Retail -> {
+                            Logger.lldo("Toggling retail flag.");
+                            Logger.lldo = false;
+                        }
+                        case Halt -> {
+                            Logger.lldo("Function halted");
+                            return true;
+                        }
+                    } // Debug Results
+                }
                 continue;
             }
-            r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line, (MemoryManager) memory);
-            switch (r) {
-                case Instruction_Perfect -> {
-                    Logger.lldo("Instruction " + line + " executed perfectly.");
-                }
-                case Instruction_Warning -> {
-                    Logger.lldo("Instruction " + line + " executed with warnings.");
-                }
-                case Instruction_Error -> {
-                    Logger.lldo("Instruction " + line + " did not execute correctly.");
-                    Logger.log("An error occurred, and function had been destroyed.", Logger.logfile, true);
-                    return false;
-                }
-                case Instruction_PerformanceFailure -> {
-                    Logger.lldo("Instruction " + line + " executed with worse performance.");
-                }
-                case ToggleFlag_Debug -> {
-                    Logger.lldo = true;
-                    Logger.lldo("Toggling debug flag.");
-                }
-                case ToggleFlag_Retail -> {
-                    Logger.lldo("Toggling retail flag.");
-                    Logger.lldo = false;
-                }
-                case Halt -> {
-                    Logger.lldo("Function halted");
-                    return true;
-                }
-            } // Debug Results
+                if (line.isEmpty()) continue;
+                r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line, (MemoryManager) memory, (MemoryManager) qm);
+                switch (r) {
+                    case Loop_Start -> {
+                        String ls = new String(qm.readByteArray(0));
+                        loop_count = Integer.valueOf(ls.trim());
+                        loop_enabled = true;
+                        loop_prep = true;
+                    }
+                    case Loop_End -> {
+                        loop_prep = false;
+                        loop_count = ( loop_count - 1 ) * loopMap.size();
+                    }
+                    case Instruction_Perfect -> {
+                        Logger.lldo("Instruction " + line + " executed perfectly.");
+                    }
+                    case Instruction_Warning -> {
+                        Logger.lldo("Instruction " + line + " executed with warnings.");
+                    }
+                    case Instruction_Error -> {
+                        Logger.lldo("Instruction " + line + " did not execute correctly.");
+                        Logger.log("An error occurred, and function had been destroyed.", Logger.logfile, true);
+                        return false;
+                    }
+                    case Instruction_PerformanceFailure -> {
+                        Logger.lldo("Instruction " + line + " executed with worse performance.");
+                    }
+                    case ToggleFlag_Debug -> {
+                        Logger.lldo = true;
+                        Logger.lldo("Toggling debug flag.");
+                    }
+                    case ToggleFlag_Retail -> {
+                        Logger.lldo("Toggling retail flag.");
+                        Logger.lldo = false;
+                    }
+                    case Halt -> {
+                        Logger.lldo("Function halted");
+                        return true;
+                    }
+                } // Debug Results
         }
-
         return true;
     }
 
-    public static ExecuteResults executeInstruction(LinkedHashMap<_tokenValues, Object> instruction, MemoryManager memory) {
+    public static ExecuteResults executeInstruction(LinkedHashMap<_tokenValues, Object> instruction, MemoryManager memory, MemoryManager qm) {
 
         Instructions currentInstructions;
 
@@ -302,6 +367,21 @@ public class RomExecutor {
                         int length = String.valueOf(VirtualMachineMemory.Variables.get(var2)).length();
                         VirtualMachineMemory.Variables.put(var1, length);
                         return Instruction_Perfect;
+                    }
+                    case LOOP -> {
+                        next = it.next();       // move iterator by 1
+                        next_key    = next.getKey();    // get key
+                        next_value  = next.getValue();  // get value
+                        if (next_key != _tokenValues.ValueInteger) {
+                            return Instruction_Error;
+                        }
+                        int loop_times = Integer.parseInt(String.valueOf(next_value)); // how many loops to do
+                        qm.writeByteArray(0, String.valueOf(loop_times).getBytes());
+                        return Loop_Start;
+                    }
+                    case ENDLOOP -> {
+                        qm.clear();
+                        return Loop_End;
                     }
                     case INT -> {
                         next = it.next();       // move iterator by 1

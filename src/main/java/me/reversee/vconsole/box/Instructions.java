@@ -13,6 +13,9 @@ public enum Instructions {
     DIV, // eg. div A, B                  - divides variable by variable
     LEN, // eg. len A, B                  - sets A's content to be B's length
 
+    LOOP,   // eg. loop 5                 - loop x times ( -1 for infinity )
+    ENDLOOP,// eg. endloop                - specifies loop ending point
+
     VAR, // eg. var hello                 - adds a variable hello
 
     INT, // eg. int 0x0A 1                - calls an interrupt

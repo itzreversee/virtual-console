@@ -44,7 +44,7 @@ Check wiki **(not written yet)**
  * [x] Variables
  * [x] Memory management
  * [x] Multiply / Divide
- * [ ] Loops
+ * [x] Loops ( buggy )
  * [ ] Functions (like sections in assembly)
  * [x] Input (raw)
  * [ ] Input (key listener)
@@ -62,3 +62,6 @@ Check wiki **(not written yet)**
  * [ ] "OS" with GUI
  * [ ] ...
  * [ ] Security
+
+### Known issues
+ * Loops are buggy
