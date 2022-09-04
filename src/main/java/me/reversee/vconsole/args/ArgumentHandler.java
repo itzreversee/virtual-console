@@ -5,6 +5,7 @@ import me.reversee.vconsole.rom.RomCompiler;
 import me.reversee.vconsole.rom.RomExecutor;
 import me.reversee.vconsole.rom.RomFile;
 import me.reversee.vconsole.rom.RomManager;
+import me.reversee.vconsole.util.FileUtil;
 import me.reversee.vconsole.util.Logger;
 
 import java.util.Iterator;
@@ -30,6 +31,10 @@ public class ArgumentHandler {
             Logger.log(key + " : " + value.toString(), Logger.logfile, true);
 
             switch (key) {
+                case "clear_logs" -> {
+                    Logger.log("Cleaning!", Logger.logfile, true);
+                    FileUtil.removeLogFile();
+                }
                 case "debug_mode" -> {
                     Logger.log("Enabled debug mode!", Logger.logfile, true);
                 }

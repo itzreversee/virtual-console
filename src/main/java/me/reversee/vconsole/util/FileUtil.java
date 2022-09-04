@@ -25,4 +25,20 @@ public class FileUtil {
 
         return true;
     }
+    public static void removeLogFile() {
+        boolean success = false;
+        File folder = new File(".");
+        File[] fList = folder.listFiles();
+        for (File file : fList) {
+            String pes = file.getName();
+            if (pes.endsWith(".log")) {
+                success = (new File(String.valueOf(file)).delete());
+            }
+        }
+        if (success) {
+            Logger.log("Success!", Logger.logfile, true);
+        } else {
+            Logger.log("Failed to remove logfiles!", Logger.logfile, true);
+        }
+    }
 }

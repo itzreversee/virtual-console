@@ -14,8 +14,7 @@ Here is the list of available parameters:
  * ```--skip-rtsc``` skips writing ```.rtsc``` file 
  * ```--rom``` launches rom inside vc **(Currently can only run ```.rom_cmap``` files!)**
  * ```--clear-cache``` clears cache **(not implemented yet)**
- * ```--clear-logs``` clears logs **(not implemented yet)**
-
+ * ```--clear-logs``` clears logs and keeps only latest
 ### Compiling 
 You need maven, git and jdk 18 installed for this
 If you have these, open terminal and paste this
@@ -33,7 +32,8 @@ Or if you have IntelliJ idea installed:
 
 When it finishes, you can run it from ```target/``` (Maven) or ```out/artifacts/``` (IntelliJ) folder:  
 ```bash
-java -jar target/virtual-console.jar --compile-rom-source examples/01-hello.rsc # compile
+# copy jar file to root of the repo folder and run:
+java -jar target/virtual-console.jar --skip-rtsc --compile-rom-source examples/01-hello.rsc # compile
 java -jar target/virtual-console.jar --rom examples/01-hello.rom_cmap # run
 ```
 
