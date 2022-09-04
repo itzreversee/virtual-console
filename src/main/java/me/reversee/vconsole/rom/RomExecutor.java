@@ -299,7 +299,7 @@ public class RomExecutor {
                         next_key    = next.getKey();    // get key
                         next_value  = next.getValue();  // get value
                         String var2 = String.valueOf(next_value);
-                        int length = Integer.valueOf(String.valueOf(var2).length());
+                        int length = String.valueOf(VirtualMachineMemory.Variables.get(var2)).length();
                         VirtualMachineMemory.Variables.put(var1, length);
                         return Instruction_Perfect;
                     }
