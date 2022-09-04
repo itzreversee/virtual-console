@@ -59,7 +59,7 @@ public class Tokenizer {
         LinkedHashMap<_tokenValues, Object> compiledTokenizedString = new LinkedHashMap<>();
 
         ListIterator<String> tokens = tokenized_string.listIterator();
-        Instructions ci;
+        Instructions ci = null;
         Registers ri;
         ArrayList<_tokenValues> compileSet = new ArrayList<>();
         Object output;
@@ -78,14 +78,23 @@ public class Tokenizer {
                 compileSet = getInstructionCompileSet(ci);
             } else if (i > 1) {
                 Logger.log("Check parameters for : " + output.toString() + ", should be : " + _tokenValues.valueOf(String.valueOf(compileSet.get(i - 2))), Logger.logfile, true );
-                if (output.toString().toLowerCase().equals("mov")) {
+                if (ci == Instructions.MUL || ci == Instructions.DIV || ci == Instructions.ADD) {
+                    System.out.println("HERE!!!\n");
                     if (i == 2) {
-                        if (isTokenValueValid(output, _tokenValues.ValueInteger)) {
-                            compiledTokenizedString.put(_tokenValues.ValueInteger, Integer.valueOf(String.valueOf(output)));
+                        if (isTokenValueValid(output, _tokenValues.VariableTarget)) {
+                            compiledTokenizedString.put(_tokenValues.VariableTarget, String.valueOf(output));
+
                         } else {
-                            compiledTokenizedString.put(_tokenValues.VariableOrAddress, Integer.valueOf(String.valueOf(output)));
+                            compiledTokenizedString.put(_tokenValues.None, String.valueOf(output));
+                        }
+                    } else if (i == 3) {
+                        if (isTokenValueValid(output, _tokenValues.Variable)) {
+                            compiledTokenizedString.put(_tokenValues.Variable, String.valueOf(output));
+                        } else {
+                            compiledTokenizedString.put(_tokenValues.None, String.valueOf(output));
                         }
                     }
+                    continue;
                 }
                 try {
                     Registers.valueOf((output.toString().toUpperCase()));
@@ -148,11 +157,11 @@ public class Tokenizer {
                 compiledTokenizedString.add(_tokenValues.Variable);
                 compiledTokenizedString.add(_tokenValues.ValueAny);
             }
-            case ADD, INC, DEC -> {
+            case INC, DEC -> {
                 compiledTokenizedString.add(_tokenValues.Variable);
                 compiledTokenizedString.add(_tokenValues.ValueInteger);
             }
-            case LEN -> {
+            case ADD, LEN, MUL, DIV -> {
                 compiledTokenizedString.add(_tokenValues.VariableTarget);
                 compiledTokenizedString.add(_tokenValues.Variable);
             }

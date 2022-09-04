@@ -6,10 +6,11 @@ public enum Instructions {
     MOV, // eg. mov 1, "Hello, World!"    - moves value into memory
     MVA, // eg. mov 1, PBB                - moves variable into memory
     MVV, // eg. mov 1, hello              - moves variable into memory
-    ADD, // eg. add A, 10                 - adds value to variable
+    ADD, // eg. add A, B                  - adds variable to variable
     INC, // eg. inc A, 2                  - increments variable by value
     DEC, // eg. dec A, 2                  - decrements variable by value
-
+    MUL, // eg. mul A, B                  - multiplies variable by variable
+    DIV, // eg. div A, B                  - divides variable by variable
     LEN, // eg. len A, B                  - sets A's content to be B's length
 
     VAR, // eg. var hello                 - adds a variable hello

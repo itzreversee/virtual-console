@@ -43,6 +43,7 @@ Check wiki **(not written yet)**
 ### To-Do
  * [x] Variables
  * [x] Memory management
+ * [x] Multiply / Divide
  * [ ] Functions (like sections in assembly)
  * [x] Input (raw)
  * [ ] Input (key listener)

@@ -172,7 +172,7 @@ public class RomExecutor {
                         VirtualMachineMemory.Variables.put(variable_name, variable_value);
                         return Instruction_Perfect;
                     } // move ValueAny into Variable
-                    case ADD, INC -> {
+                    case INC -> {
                         next = it.next();       // move iterator by 1
                         next_key = next.getKey();    // get key
                         next_value = next.getValue();  // get value
@@ -210,6 +210,72 @@ public class RomExecutor {
                         }
                         // decrement
                         VirtualMachineMemory.Variables.put(variable_name, variable_content - Integer.parseInt(String.valueOf(next_value)));
+                        return Instruction_Perfect;
+                    }
+                    case ADD -> {
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.VariableTarget) && VirtualMachineMemory.Variables.containsKey(next_value)) {
+                            return Instruction_Error;
+                        }
+                        String var1 = String.valueOf(next_value);
+                        int var1c = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(var1)));
+
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.Variable)) {
+                            return Instruction_Error;
+                        }
+                        // add
+                        String var2 = String.valueOf(next_value);
+                        int var2c = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(var2)));
+                        VirtualMachineMemory.Variables.put(var1, var1c + var2c);
+                        return Instruction_Perfect;
+                    }
+                    case MUL -> {
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.VariableTarget) && VirtualMachineMemory.Variables.containsKey(next_value)) {
+                            return Instruction_Error;
+                        }
+                        String var1 = String.valueOf(next_value);
+                        int var1c = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(var1)));
+
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.Variable)) {
+                            return Instruction_Error;
+                        }
+                        // add
+                        String var2 = String.valueOf(next_value);
+                        int var2c = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(var2)));
+                        VirtualMachineMemory.Variables.put(var1, var1c * var2c);
+                        return Instruction_Perfect;
+                    }
+                    case DIV -> {
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.VariableTarget) && VirtualMachineMemory.Variables.containsKey(next_value)) {
+                            return Instruction_Error;
+                        }
+                        String var1 = String.valueOf(next_value);
+                        int var1c = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(var1)));
+
+                        next = it.next();       // move iterator by 1
+                        next_key = next.getKey();    // get key
+                        next_value = next.getValue();  // get value
+                        if (!(next_key == _tokenValues.Variable)) {
+                            return Instruction_Error;
+                        }
+                        // add
+                        String var2 = String.valueOf(next_value);
+                        int var2c = Integer.parseInt(String.valueOf(VirtualMachineMemory.Variables.get(var2)));
+                        VirtualMachineMemory.Variables.put(var1, var1c / var2c);
                         return Instruction_Perfect;
                     }
                     case VAR -> {
@@ -256,6 +322,7 @@ public class RomExecutor {
                                     sb.append((char) b);
                                 }
                                 System.out.print(sb.toString());
+                                Logger.log("PRINT: " + sb.toString(), Logger.logfile);
                                 return Instruction_Perfect;
                             }
                             case INT_0X0B -> {
