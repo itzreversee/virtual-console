@@ -32,8 +32,7 @@ Or if you have IntelliJ idea installed:
 
 When it finishes, you can run it from ```target/``` (Maven) or ```out/artifacts/``` (IntelliJ) folder:  
 ```bash
-# copy jar file to root of the repo folder and run:
-java -jar target/virtual-console.jar --skip-rtsc --compile-rom-source examples/01-hello.rsc # compile
+java -jar target/virtual-console.jar --skip-rtsc --compile-rom-source examples/ # compile everything in folder
 java -jar target/virtual-console.jar --rom examples/01-hello.rom_cmap # run
 ```
 
@@ -49,6 +48,7 @@ Check wiki **(not written yet)**
  * [x] Input (raw)
  * [ ] Input (key listener)
  * [x] Logic (Compare, Do If Equal, etc.) 
+ * [x] Mass compile
  * [ ] Arrays
  * [ ] Compiling to "binary"
  * [ ] ...

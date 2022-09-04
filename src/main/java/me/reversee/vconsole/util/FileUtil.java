@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
 
 public class FileUtil {
     public static boolean writeToFile(String str, String path, boolean overwrite) {
@@ -40,5 +41,14 @@ public class FileUtil {
         } else {
             Logger.log("Failed to remove logfiles!", Logger.logfile, true);
         }
+    }
+    public static LinkedList<String> getRomSourceFilesFromFolder(File folder) {
+        LinkedList<String> source_list = new LinkedList<String>();
+        File[] fList = folder.listFiles();
+        for (File file : fList) {
+            String pes = file.getName();
+            if (pes.endsWith(".rsc")) source_list.add(String.valueOf(file));
+        }
+        return source_list;
     }
 }

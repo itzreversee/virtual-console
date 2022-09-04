@@ -8,10 +8,8 @@ import me.reversee.vconsole.rom.RomManager;
 import me.reversee.vconsole.util.FileUtil;
 import me.reversee.vconsole.util.Logger;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 
 import static me.reversee.vconsole.rom.CompilerOptions.OutputFile;
 import static me.reversee.vconsole.rom.CompilerOptions.SkipRtsc;
@@ -50,7 +48,19 @@ public class ArgumentHandler {
                 }
                 case "compile_rom_source" -> {
                     Logger.log("Compiling rom from source", Logger.logfile, true);
-                    RomCompiler.compileFromFile(String.valueOf(value));
+                    File file = new File(String.valueOf(value));
+                    if (file.isDirectory()) {
+                        int file_counter = 0;
+                        LinkedList<String> sl = FileUtil.getRomSourceFilesFromFolder(file);
+                        for (String src : sl) {
+                            file_counter++;
+                            Logger.log(" (" + file_counter + "/" + sl.size() + ") Compiling file : " + src , Logger.logfile, true);
+                            RomCompiler.compileFromFile(String.valueOf(src));
+                        }
+                        Logger.log("Compiled all " + sl.size() + " files", Logger.logfile, true);
+                    } else {
+                        RomCompiler.compileFromFile(String.valueOf(value));
+                    }
                 }
                 case "rom_file" -> {
                     Logger.log("Loading rom file", Logger.logfile, true);
