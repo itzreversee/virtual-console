@@ -331,7 +331,7 @@ public class RomExecutor {
                             case INT_0X1A -> {
                                 Scanner scn = new Scanner(System.in);  // Create a Scanner object
                                 System.out.println(" > ");
-                                String input = scn.next();  // Read user input
+                                String input = scn.nextLine();  // Read user input
                                 next = it.next();
                                 next_value = next.getValue();
                                 String variable_name = String.valueOf(next_value);
