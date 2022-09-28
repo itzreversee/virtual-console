@@ -2,6 +2,7 @@ package me.reversee.vconsole.rom;
 
 import me.reversee.vconsole.box.*;
 import me.reversee.vconsole.cpu.MemoryManager;
+import me.reversee.vconsole.exceptions.MemoryOverflowAttempt;
 import me.reversee.vconsole.exceptions.NotImplementedException;
 import me.reversee.vconsole.util.Logger;
 import me.reversee.vconsole.util.StringTool;
@@ -81,7 +82,11 @@ public class RomExecutor {
                             if (!do_is_equal && cmp_result) continue;
                         }
                         r = executeInstruction((LinkedHashMap<_tokenValues, Object>) loopline, memory, lm, cm);
-                        cmp_result = Boolean.parseBoolean(String.valueOf(cm.readByte(0)!=0));
+                        try {
+                            cmp_result = Boolean.parseBoolean(String.valueOf(cm.readByte(0) != 0));
+                        } catch (MemoryOverflowAttempt e) {
+                            Logger.log("Could not read data from memory, not enough space!", Logger.logfile, true);
+                        }
                         switch (r) {
                             case DEQ_Start -> {
                                 in_do_block = true;
@@ -136,7 +141,11 @@ public class RomExecutor {
                     if (!do_is_equal && cmp_result) continue;
                 }
                 r = executeInstruction((LinkedHashMap<_tokenValues, Object>) line, memory, lm, cm);
-                cmp_result = Boolean.parseBoolean(String.valueOf(cm.readByte(0)!=0));
+                try {
+                    cmp_result = Boolean.parseBoolean(String.valueOf(cm.readByte(0)!=0));
+                } catch (MemoryOverflowAttempt e) {
+                    Logger.log("Could not read data from memory, not enough space!", Logger.logfile, true);
+                }
                 switch (r) {
                     case DEQ_Start -> {
                         in_do_block = true;
@@ -147,7 +156,13 @@ public class RomExecutor {
                         do_is_equal = false;
                     }
                     case Loop_Start -> {
-                        String ls = new String(lm.readByteArray(0));
+                        String ls;
+                        try {
+                            ls = new String(lm.readByteArray(0));
+                        } catch (MemoryOverflowAttempt e) {
+                            Logger.log("Could not read data from memory, not enough space!", Logger.logfile, true);
+                            continue;
+                        }
                         loop_count = Integer.valueOf(ls.trim());
                         if (loop_count == -1)  {
                             loop_inf = true;
@@ -265,7 +280,11 @@ public class RomExecutor {
                         Object val = next_value;
 
                         // write to memory
-                        memory.writeByteArray(addr, val.toString().getBytes());
+                        try {
+                            memory.writeByteArray(addr, val.toString().getBytes());
+                        } catch (MemoryOverflowAttempt e) {
+                            Logger.log("Could not write data to memory, not enough space!", Logger.logfile, true);
+                        }
                         return Instruction_Perfect;
                     }  // move ValueAny into Address
                     case MVA -> {
@@ -291,7 +310,11 @@ public class RomExecutor {
                         }
 
                         // write to memory
-                        memory.writeByteArray(write_addr, val.toString().getBytes());
+                        try {
+                            memory.writeByteArray(write_addr, val.toString().getBytes());
+                        } catch (MemoryOverflowAttempt e) {
+                            Logger.log("Could not write data to memory, not enough space!", Logger.logfile, true);
+                        }
                         return Instruction_Perfect;
 
                     } // move Variable into Address
@@ -450,7 +473,11 @@ public class RomExecutor {
                             return Instruction_Error;
                         }
                         int loop_times = Integer.parseInt(String.valueOf(next_value)); // how many loops to do
-                        lm.writeByteArray(0, String.valueOf(loop_times).getBytes());
+                        try {
+                            lm.writeByteArray(0, String.valueOf(loop_times).getBytes());
+                        } catch (MemoryOverflowAttempt e) {
+                            Logger.log("Could not write data to memory, not enough space!", Logger.logfile, true);
+                        }
                         return Loop_Start;
                     }
                     case ENDLOOP -> {
@@ -481,9 +508,17 @@ public class RomExecutor {
                         Object var2c = VirtualMachineMemory.Variables.get(var2);
                         boolean iseq = Objects.equals(var1c, var2c);
                         if (iseq) {
-                            cm.writeByte(0, (byte) 1);
+                            try {
+                                cm.writeByte(0, (byte) 1);
+                            } catch (MemoryOverflowAttempt e) {
+                                Logger.log("Could not write data to memory, not enough space!", Logger.logfile, true);
+                            }
                         } else {
-                            cm.writeByte(0, (byte) 0);
+                            try {
+                                cm.writeByte(0, (byte) 0);
+                            } catch (MemoryOverflowAttempt e) {
+                                Logger.log("Could not write data to memory, not enough space!", Logger.logfile, true);
+                            }
                         }
                         return Instruction_Perfect;
                     }
@@ -508,7 +543,13 @@ public class RomExecutor {
                             case INT_0X0A -> {
                                 StringBuilder sb = new StringBuilder();
                                 next = it.next();
-                                byte[] ba = memory.readByteArray(Integer.parseInt((String) next.getValue()));
+                                byte[] ba;
+                                try {
+                                    ba = memory.readByteArray(Integer.parseInt((String) next.getValue()));
+                                } catch (MemoryOverflowAttempt e) {
+                                    Logger.log("Could not read data from memory, not enough space!", Logger.logfile, true);
+                                    break;
+                                }
                                 for (byte b : ba) {
                                     if (b == -3)
                                         break;

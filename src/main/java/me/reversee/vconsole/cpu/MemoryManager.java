@@ -1,5 +1,6 @@
 package me.reversee.vconsole.cpu;
 
+import me.reversee.vconsole.exceptions.MemoryOverflowAttempt;
 import me.reversee.vconsole.util.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -25,52 +26,69 @@ public class MemoryManager implements Memory {
     }
 
     @Override
-    public Byte readByte(int address) {
+    public Byte readByte(int address) throws MemoryOverflowAttempt {
+        if (address >= this.size) {
+            throw new MemoryOverflowAttempt();
+        }
         return this.memory[address];
     }
 
     @Override
-    public void writeByte(int address, byte value) {
+    public void writeByte(int address, byte value) throws MemoryOverflowAttempt {
+        if (address >= this.size) {
+            throw new MemoryOverflowAttempt();
+        }
         this.memory[address] = value;
     }
 
     // advanced functions
 
     // Words
-    public void writeWord(int addr, byte val1, byte val2) {
+    public void writeWord(int addr, byte val1, byte val2) throws MemoryOverflowAttempt {
+        if (addr + 1 >= this.size) {
+            throw new MemoryOverflowAttempt();
+        }
         this.memory[addr] = val1;
         this.memory[addr + 1] = val2;
     }
 
-    public byte[] readWord(int addr) {
+    public byte[] readWord(int addr) throws MemoryOverflowAttempt  {
+        if (addr + 1 >= this.size) {
+            throw new MemoryOverflowAttempt();
+        }
         return new byte[]{this.memory[addr], this.memory[addr + 1]};
     }
 
     // Byte Arrays
-    public void writeByteArray(int addr, byte[] val) { // write byte array
+    public void writeByteArray(int addr, byte[] val) throws MemoryOverflowAttempt { // write byte array
         int addr_it = 0;
         for(byte b : val){
+            if ((addr + addr_it) >= size) throw new MemoryOverflowAttempt();
+            // System.out.println("addr: " + (addr + addr_it) + " <- " + b); // Uncomment this if you want to see io operations
             this.memory[addr + addr_it] = b;
             addr_it++;
         }
         this.memory[addr + addr_it + 1] = -3; // write ending header
     }
 
-    public byte[] readByteArray(int addr_start, int addr_end) { // read byte array from start to end
+    public byte[] readByteArray(int addr_start, int addr_end) throws MemoryOverflowAttempt{ // read byte array from start to end
+        if (addr_end >= size) throw new MemoryOverflowAttempt();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int addr_cur = addr_start;
         while (!(addr_cur == addr_end)) {
+            // System.out.println("addr: " + (addr_cur) + " : " + out + " -> "); // Uncomment this if you want to see io operations
             out.write(this.memory[addr_cur]);
             addr_cur++;
         }
         return out.toByteArray();
     }
 
-    public byte[] readByteArray(int addr) { // read from byte array until header
+    public byte[] readByteArray(int addr) throws MemoryOverflowAttempt{ // read from byte array until header
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int addr_it = addr;
         while (!(this.memory[addr_it] == -3)) {
-            if (addr_it >= size -1) break;
+            if (addr_it >= size -1) throw new MemoryOverflowAttempt();
+            // System.out.println("addr: " + (addr_it) + " : " + this.memory[addr_it] + " -> "); // Uncomment this if you want to see io operations
             out.write(this.memory[addr_it]);
             addr_it++;
         }
