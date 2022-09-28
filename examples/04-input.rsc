@@ -14,8 +14,8 @@ mva 8, MyInput
 ; get length of input
 len InputLength, MyInput
 
-; add 8 to the variable to point it to the right character
-add InputLength, 9
+; increment by 9 to the variable to point it to the right character
+inc InputLength, 9
 
 ; move end of string into expected line
 mov $InputLength, "!\n"
