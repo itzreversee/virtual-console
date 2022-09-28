@@ -70,6 +70,7 @@ public class MemoryManager implements Memory {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int addr_it = addr;
         while (!(this.memory[addr_it] == -3)) {
+            if (addr_it >= size -1) break;
             out.write(this.memory[addr_it]);
             addr_it++;
         }

@@ -39,84 +39,98 @@ public class RomExecutor {
         MemoryManager memory = new MemoryManager(64); // Main Memory
         MemoryManager lm = new MemoryManager(4); // LoopMemory used for loops
         MemoryManager cm = new MemoryManager(1); // CompareMemory used for cmp/if/else etc.
-        ArrayList<LinkedHashMap<_tokenValues, Object>> loopMap = new ArrayList<LinkedHashMap<_tokenValues, Object>>();
+        LinkedList<LinkedHashMap<_tokenValues, Object>> loopMap = new LinkedList<LinkedHashMap<_tokenValues, Object>>();
 
         int loop_count = 0;
+        int instruction_count = 0;
         boolean loop_enabled = false;
         boolean loop_prep = false;
+        boolean loop_inf = false;
 
         boolean cmp_result = false;
         boolean in_do_block = false;
         boolean do_is_equal = false;
 
         for (HashMap<_tokenValues, Object> line : CompiledMap) {
-            if (loop_count == 0) {
-                loop_enabled = false;
-            }
+            if (line.isEmpty()) continue;
             if (loop_enabled && loop_prep) {
-                if (line.isEmpty()) continue;
-                loopMap.add((LinkedHashMap<_tokenValues, Object>) line);
-            } else if (loop_enabled && !loop_prep) {
-                for (LinkedHashMap<_tokenValues, Object> lline : loopMap) {
-                    if (line.isEmpty()) continue;
-                    if (in_do_block) {
-                        if (do_is_equal && !cmp_result) continue;
-                        if (!do_is_equal && cmp_result) continue;
-                    }
-                    if (loop_count == 0) {
-                        loop_enabled = false;
-                        break;
-                    }
-                    r = executeInstruction(lline, memory, lm, cm);
-                    loop_count--;
-                    switch (r) {
-                        case DEQ_Start -> {
-                            in_do_block = true;
-                            do_is_equal = true;
-                        }
-                        case DNQ_Start -> {
-                            in_do_block = true;
-                            do_is_equal = false;
-                        }
-                        case DO_End -> {
-                            in_do_block = false;
-                        }
-                        case Loop_Break -> {
-                            loop_enabled = false;
-                            loop_prep = false;
-                            loopMap.clear();
-                        }
-                        case Instruction_Perfect -> {
-                            Logger.lldo("Instruction " + line + " executed perfectly.");
-                        }
-                        case Instruction_Warning -> {
-                            Logger.lldo("Instruction " + line + " executed with warnings.");
-                        }
-                        case Instruction_Error -> {
-                            Logger.lldo("Instruction " + line + " did not execute correctly.");
-                            Logger.log("An error occurred, and function had been destroyed.", Logger.logfile, true);
-                            return false;
-                        }
-                        case Instruction_PerformanceFailure -> {
-                            Logger.lldo("Instruction " + line + " executed with worse performance.");
-                        }
-                        case ToggleFlag_Debug -> {
-                            Logger.lldo = true;
-                            Logger.lldo("Toggling debug flag.");
-                        }
-                        case ToggleFlag_Retail -> {
-                            Logger.lldo("Toggling retail flag.");
-                            Logger.lldo = false;
-                        }
-                        case Halt -> {
-                            Logger.lldo("Function halted");
-                            return true;
-                        }
-                    } // Debug Results
+                if (seekForLoopEnd(line)) {
+                    loop_prep = false;
+                    instruction_count = (loop_count + 1) * loopMap.size();
+                    continue;
                 }
+                loopMap.add((LinkedHashMap<_tokenValues, Object>) line);
                 continue;
             }
-                if (line.isEmpty()) continue;
+            if (loop_enabled) {
+                while (loop_enabled) {
+                    System.out.println(loop_count);
+                    System.out.println(instruction_count);
+                    for (HashMap<_tokenValues, Object> loopline : loopMap) {
+                        if (instruction_count <= 0 && !loop_inf) {
+                            loop_enabled = false;
+                            loop_prep = false;
+                            instruction_count = 0;
+                            loop_count = 0;
+                            break;
+                        }
+                        if (!loop_inf) instruction_count--;
+                        if(seekForEndDo(line) == DO_End && in_do_block)  {
+                            in_do_block = false;
+                        }
+                        if (in_do_block) {
+                            if (do_is_equal && !cmp_result) continue;
+                            if (!do_is_equal && cmp_result) continue;
+                        }
+                        r = executeInstruction((LinkedHashMap<_tokenValues, Object>) loopline, memory, lm, cm);
+                        cmp_result = Boolean.parseBoolean(String.valueOf(cm.readByte(0)!=0));
+                        switch (r) {
+                            case DEQ_Start -> {
+                                in_do_block = true;
+                                do_is_equal = true;
+                            }
+                            case DNQ_Start -> {
+                                in_do_block = true;
+                                do_is_equal = false;
+                            }
+                            case Loop_Break -> {
+                                loop_enabled = false;
+                                loop_prep = false;
+                                instruction_count = 0;
+                                loop_count = 0;
+                                break;
+                            }
+                            case Instruction_Perfect -> {
+                                Logger.lldo("Instruction " + line + " executed perfectly.");
+                            }
+                            case Instruction_Warning -> {
+                                Logger.lldo("Instruction " + line + " executed with warnings.");
+                            }
+                            case Instruction_Error -> {
+                                Logger.lldo("Instruction " + line + " did not execute correctly.");
+                                Logger.log("An error occurred, and function had been destroyed.", Logger.logfile, true);
+                                return false;
+                            }
+                            case Instruction_PerformanceFailure -> {
+                                Logger.lldo("Instruction " + line + " executed with worse performance.");
+                            }
+                            case ToggleFlag_Debug -> {
+                                Logger.lldo = true;
+                                Logger.lldo("Toggling debug flag.");
+                            }
+                            case ToggleFlag_Retail -> {
+                                Logger.lldo("Toggling retail flag.");
+                                Logger.lldo = false;
+                            }
+                            case Halt -> {
+                                Logger.lldo("Function halted");
+                                return true;
+                            }
+                        }
+                    }
+                }
+            } else {
+                System.out.println(loopMap);
                 if(seekForEndDo(line) == DO_End && in_do_block)  {
                     in_do_block = false;
                 }
@@ -138,12 +152,11 @@ public class RomExecutor {
                     case Loop_Start -> {
                         String ls = new String(lm.readByteArray(0));
                         loop_count = Integer.valueOf(ls.trim());
+                        if (loop_count == -1)  {
+                            loop_inf = true;
+                        } else { loop_inf = false; }
                         loop_enabled = true;
                         loop_prep = true;
-                    }
-                    case Loop_End -> {
-                        loop_prep = false;
-                        loop_count = ( loop_count - 1 ) * loopMap.size();
                     }
                     case Instruction_Perfect -> {
                         Logger.lldo("Instruction " + line + " executed perfectly.");
@@ -171,7 +184,8 @@ public class RomExecutor {
                         Logger.lldo("Function halted");
                         return true;
                     }
-                } // Debug Results
+                }
+            } // Debug Results
         }
         return true;
     }
@@ -188,6 +202,20 @@ public class RomExecutor {
         if (Instructions.valueOf(String.valueOf(value)) == Instructions.ENDDO) return DO_End;
 
         return Instruction_Perfect;
+    }
+
+    private static boolean seekForLoopEnd(HashMap<_tokenValues, Object> line) {
+        Instructions currentInstructions;
+
+        Iterator<Map.Entry<_tokenValues, Object>> it = line.entrySet().iterator();
+
+        Map.Entry<_tokenValues, Object> next = it.next();
+
+        Object value = next.getValue();
+
+        if (Instructions.valueOf(String.valueOf(value)) == Instructions.ENDLOOP) return true;
+
+        return false;
     }
 
     public static ExecuteResults executeInstruction(LinkedHashMap<_tokenValues, Object> instruction, MemoryManager memory, MemoryManager lm, MemoryManager cm) {
