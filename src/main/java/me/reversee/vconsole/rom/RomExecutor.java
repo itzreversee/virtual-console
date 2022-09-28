@@ -64,8 +64,6 @@ public class RomExecutor {
             }
             if (loop_enabled) {
                 while (loop_enabled) {
-                    System.out.println(loop_count);
-                    System.out.println(instruction_count);
                     for (HashMap<_tokenValues, Object> loopline : loopMap) {
                         if (instruction_count <= 0 && !loop_inf) {
                             loop_enabled = false;
@@ -130,7 +128,6 @@ public class RomExecutor {
                     }
                 }
             } else {
-                System.out.println(loopMap);
                 if(seekForEndDo(line) == DO_End && in_do_block)  {
                     in_do_block = false;
                 }
